@@ -141,7 +141,7 @@ function updateHeatLayer() {
       blur: 8,
       maxZoom: 9,
       minOpacity: 0.28,
-      max: 0.6,
+      max: 0.4,
       gradient: {
         0.0: "#07162c",
         0.3: "#0f3a5a",

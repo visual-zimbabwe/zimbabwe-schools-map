@@ -87,3 +87,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Tuned heatmap intensity, radius, blur, and gradient for clearer contrast.
 - Increased heatmap contrast further with tighter radius/blur and lower max.
 - Applied stepped-style gradient and lower max for stronger heatmap separation.
+- Lowered heatmap max further to intensify separation and updated cache busting.
