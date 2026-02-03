@@ -23,3 +23,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Removed unused Zimbabwe boundary JS after reverting to full world map.
 - Added embedded secondary schools JS to avoid fetch failures on file://.
 - Switched markers to div icons to improve popup reliability.
+- Increased marker size and enabled cluster spiderfy at max zoom.

@@ -15,14 +15,16 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const clusterLayer = L.markerClusterGroup({
   showCoverageOnHover: false,
+  zoomToBoundsOnClick: true,
+  spiderfyOnMaxZoom: true,
   spiderfyDistanceMultiplier: 1.2,
   maxClusterRadius: 50,
 });
 
 const schoolIcon = L.divIcon({
   className: "school-marker",
-  iconSize: [10, 10],
-  iconAnchor: [5, 5],
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
 });
 
 function escapeHtml(value) {
@@ -65,7 +67,11 @@ loadSchoolData()
   .then((geojson) => {
     const layer = L.geoJSON(geojson, {
       pointToLayer: (feature, latlng) =>
-        L.marker(latlng, { icon: schoolIcon, keyboard: false }),
+        L.marker(latlng, {
+          icon: schoolIcon,
+          keyboard: false,
+          riseOnHover: true,
+        }),
       onEachFeature: (feature, layer) => {
         layer.bindPopup(buildPopup(feature.properties));
       },
@@ -73,6 +79,12 @@ loadSchoolData()
 
     clusterLayer.addLayer(layer);
     map.addLayer(clusterLayer);
+
+    clusterLayer.on("clusterclick", (event) => {
+      if (map.getZoom() === map.getMaxZoom()) {
+        event.layer.spiderfy();
+      }
+    });
 
     try {
       map.fitBounds(clusterLayer.getBounds(), { padding: [20, 20] });
