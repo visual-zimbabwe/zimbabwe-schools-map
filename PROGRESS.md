@@ -24,3 +24,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added embedded secondary schools JS to avoid fetch failures on file://.
 - Switched markers to div icons to improve popup reliability.
 - Increased marker size and enabled cluster spiderfy at max zoom.
+- Added search, province/district filters, and summary panel.

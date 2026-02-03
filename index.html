@@ -27,6 +27,34 @@
         Secondary Schools
       </div>
     </div>
+    <div class="panel" aria-label="Filters and summary">
+      <div class="panel-title">Secondary Schools</div>
+      <label class="panel-label" for="searchInput">Search</label>
+      <input
+        id="searchInput"
+        class="panel-input"
+        type="text"
+        placeholder="School name…"
+      />
+      <label class="panel-label" for="provinceSelect">Province</label>
+      <select id="provinceSelect" class="panel-select"></select>
+      <label class="panel-label" for="districtSelect">District</label>
+      <select id="districtSelect" class="panel-select"></select>
+      <div class="panel-section">
+        <div class="panel-metric">
+          <span class="panel-metric-label">Filtered total</span>
+          <span id="filteredCount" class="panel-metric-value">0</span>
+        </div>
+        <div class="panel-metric">
+          <span class="panel-metric-label">In view</span>
+          <span id="inViewCount" class="panel-metric-value">0</span>
+        </div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-subtitle">Top Provinces (filtered)</div>
+        <ol id="topProvinces" class="panel-list"></ol>
+      </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
