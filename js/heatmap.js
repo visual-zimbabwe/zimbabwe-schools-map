@@ -29,6 +29,8 @@ let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
 const HEAT_RADIUS_KM = 5;
+const ZIMBABWE_BOUNDARY_URL =
+  "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
 
 function primeWindowData() {
   if (window.PRIMARY_SCHOOLS && window.SECONDARY_SCHOOLS) {
@@ -168,6 +170,80 @@ function heatRadiusPx() {
   return Math.max(6, Math.min(60, Math.round(px)));
 }
 
+function coordsToLatLngs(coords) {
+  return coords.map(([lon, lat]) => [lat, lon]);
+}
+
+function extractRings(geometry) {
+  if (!geometry) return [];
+  if (geometry.type === "Polygon") {
+    return geometry.coordinates.map(coordsToLatLngs);
+  }
+  if (geometry.type === "MultiPolygon") {
+    return geometry.coordinates.flatMap((polygon) =>
+      polygon.map(coordsToLatLngs)
+    );
+  }
+  return [];
+}
+
+function addZimbabweMask(feature) {
+  const rings = extractRings(feature.geometry);
+  if (!rings.length) return;
+
+  const outerRing = [
+    [90, -180],
+    [90, 180],
+    [-90, 180],
+    [-90, -180],
+  ];
+
+  const maskPane = map.createPane("maskPane");
+  maskPane.style.zIndex = 450;
+
+  const outlinePane = map.createPane("outlinePane");
+  outlinePane.style.zIndex = 460;
+
+  L.polygon([outerRing, ...rings], {
+    pane: "maskPane",
+    stroke: false,
+    fillColor: "#0b1320",
+    fillOpacity: 0.86,
+  }).addTo(map);
+
+  L.geoJSON(feature, {
+    pane: "outlinePane",
+    style: {
+      color: "#0f172a",
+      weight: 1.4,
+      fillOpacity: 0,
+    },
+  }).addTo(map);
+}
+
+function loadZimbabweBoundary() {
+  fetch(ZIMBABWE_BOUNDARY_URL)
+    .then((response) => {
+      if (!response.ok) throw new Error("Boundary fetch failed.");
+      return response.json();
+    })
+    .then((data) => {
+      const feature =
+        (data.features || []).find(
+          (item) =>
+            item.id === "ZWE" ||
+            item.properties?.iso_a3 === "ZWE" ||
+            item.properties?.name === "Zimbabwe"
+        ) || null;
+      if (feature) {
+        addZimbabweMask(feature);
+      }
+    })
+    .catch((err) => {
+      console.warn("Boundary mask not loaded.", err);
+    });
+}
+
 function scheduleHeatLayer() {
   if (heatReady) return;
   heatReady = true;
@@ -209,11 +285,12 @@ Promise.all([
         "No school data loaded. Use a local server or verify data files.";
       return;
     }
-map.whenReady(() => {
-  map.invalidateSize();
-  scheduleHeatLayer();
-});
-loading.style.display = "none";
+    map.whenReady(() => {
+      map.invalidateSize();
+      loadZimbabweBoundary();
+      scheduleHeatLayer();
+    });
+    loading.style.display = "none";
   })
   .catch((err) => {
     loading.textContent = "Failed to load school data.";
@@ -225,6 +302,7 @@ if (isFileProtocol && primeWindowData()) {
   updateRanks();
   map.whenReady(() => {
     map.invalidateSize();
+    loadZimbabweBoundary();
     scheduleHeatLayer();
   });
   loading.style.display = "none";
