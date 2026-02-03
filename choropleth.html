@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zimbabwe School Coverage Atlas</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="css/choropleth.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div id="map"></div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h1>School Coverage Atlas</h1>
+            <p>Zimbabwe • Province-level density view</p>
+          </div>
+          <span class="badge">Choropleth</span>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric">
+            <span>Visible provinces</span>
+            <strong id="visibleCount">0</strong>
+          </div>
+          <div class="metric">
+            <span>Total schools</span>
+            <strong id="totalCount">0</strong>
+          </div>
+        </div>
+
+        <div class="controls">
+          <label for="levelSelect">School level</label>
+          <select id="levelSelect">
+            <option value="total">All schools</option>
+            <option value="primary">Primary only</option>
+            <option value="secondary">Secondary only</option>
+          </select>
+        </div>
+
+        <div class="note">
+          Hover a province to see counts. Colors show relative concentration of
+          schools by province.
+        </div>
+      </div>
+
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/choropleth.js"></script>
+  </body>
+</html>
