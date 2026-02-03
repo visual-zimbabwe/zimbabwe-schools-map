@@ -1,6 +1,6 @@
 # Zimbabwe Schools Map
 
-Minimal, static web map of Zimbabwe’s primary and secondary schools using Leaflet.
+Minimal, static web map of Zimbabwe's primary and secondary schools using Leaflet.
 
 ## Features
 - Primary + secondary school layers with clustering
@@ -15,6 +15,14 @@ The source dataset is not stored in this repository. Download it from Geo-Connec
 
 Dataset source:
 - `https://data.geo-connect.org/datasets/schools-in-zimbabwe/`
+
+## Clean the source data (recommended)
+```
+python scripts/clean_schools.py
+```
+This creates:
+- `data/clean_schools.csv`
+- `data/quality_report.md`
 
 ## Build the map data
 ```

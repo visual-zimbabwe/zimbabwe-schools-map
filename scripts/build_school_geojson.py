@@ -1,10 +1,12 @@
+import argparse
 import csv
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
-CSV_PATH = ROOT / "location_of_schools.csv"
+DEFAULT_CSV = ROOT / "location_of_schools.csv"
+CLEANED_CSV = DATA_DIR / "clean_schools.csv"
 
 LEVELS = {
     "Primary": {
@@ -57,9 +59,9 @@ def open_csv(path: Path):
     return path.open(newline="", encoding=encoding)
 
 
-def build_geojson(level):
+def build_geojson(level, source_path: Path):
     features = []
-    with open_csv(CSV_PATH) as handle:
+    with open_csv(source_path) as handle:
         reader = csv.DictReader(handle)
         for row in reader:
             if (row.get("SchoolLevel") or "").strip() != level:
@@ -70,8 +72,8 @@ def build_geojson(level):
     return {"type": "FeatureCollection", "features": features}
 
 
-def write_outputs(level, config):
-    geojson = build_geojson(level)
+def write_outputs(level, config, source_path: Path):
+    geojson = build_geojson(level, source_path)
     config["geojson"].write_text(
         json.dumps(geojson, ensure_ascii=True), encoding="utf-8"
     )
@@ -80,9 +82,25 @@ def write_outputs(level, config):
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Build GeoJSON outputs for primary and secondary schools."
+    )
+    parser.add_argument(
+        "--input",
+        type=Path,
+        help="Path to source CSV (defaults to data/clean_schools.csv if present).",
+    )
+    args = parser.parse_args()
+
+    source_path = args.input
+    if source_path is None:
+        source_path = CLEANED_CSV if CLEANED_CSV.exists() else DEFAULT_CSV
+    if not source_path.exists():
+        raise SystemExit(f"Source CSV not found: {source_path}")
+
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     for level, config in LEVELS.items():
-        write_outputs(level, config)
+        write_outputs(level, config, source_path)
 
 
 if __name__ == "__main__":

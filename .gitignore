@@ -1,8 +1,10 @@
 # Data files (downloaded locally)
 location_of_schools.csv
 
-# Generated data (commit GeoJSON, ignore JS)
+# Generated data (commit GeoJSON, ignore CSV/JS/report)
+data/*.csv
 data/*.js
+data/quality_report.md
 
 # Local-only docs and datasets
 AGENTS.md
