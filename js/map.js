@@ -55,6 +55,28 @@ const togglePrimary = document.getElementById("togglePrimary");
 const toggleSecondary = document.getElementById("toggleSecondary");
 const clearFilters = document.getElementById("clearFilters");
 const schoolNames = document.getElementById("schoolNames");
+const panelToggle = document.getElementById("panelToggle");
+const mediaQuery = window.matchMedia("(max-width: 720px)");
+
+function setPanelCollapsed(collapsed) {
+  document.body.classList.toggle("panel-collapsed", collapsed);
+  if (panelToggle) {
+    panelToggle.setAttribute("aria-expanded", String(!collapsed));
+    panelToggle.textContent = collapsed ? "Filters" : "Hide filters";
+  }
+}
+
+function syncPanelForViewport() {
+  if (mediaQuery.matches) {
+    if (!document.body.classList.contains("panel-init")) {
+      document.body.classList.add("panel-init");
+      setPanelCollapsed(true);
+    }
+  } else {
+    document.body.classList.remove("panel-init");
+    setPanelCollapsed(false);
+  }
+}
 
 let primaryFeatures = [];
 let secondaryFeatures = [];
@@ -325,6 +347,7 @@ Promise.all([
     refreshDistrictOptions();
     applyFilters();
     loading.style.display = "none";
+    syncPanelForViewport();
   })
   .catch((err) => {
     loading.textContent = "Failed to load school data.";
@@ -358,6 +381,16 @@ clearFilters.addEventListener("click", () => {
   refreshDistrictOptions();
   applyFilters();
 });
+
+if (panelToggle) {
+  panelToggle.addEventListener("click", () => {
+    const collapsed = document.body.classList.contains("panel-collapsed");
+    setPanelCollapsed(!collapsed);
+  });
+}
+
+mediaQuery.addEventListener("change", syncPanelForViewport);
+syncPanelForViewport();
 
 map.on("moveend zoomend", () => {
   const provinces = getSelectedValues(provinceSelect);

@@ -21,7 +21,16 @@
   <body>
     <div class="app">
       <div id="map"></div>
-      <div class="panel" aria-label="Filters and story">
+      <button
+        class="panel-toggle"
+        id="panelToggle"
+        type="button"
+        aria-controls="filterPanel"
+        aria-expanded="true"
+      >
+        Filters
+      </button>
+      <div class="panel" id="filterPanel" aria-label="Filters and story">
         <h1>Zimbabwe Schools Explorer</h1>
         <p>
           Discover learning hubs across the country. Zoom in to explore

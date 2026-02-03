@@ -56,6 +56,23 @@ body {
   backdrop-filter: blur(6px);
 }
 
+.panel-toggle {
+  display: none;
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 1100;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(17, 24, 39, 0.28);
+}
+
 .panel h1 {
   font-family: "Fraunces", serif;
   font-weight: 700;
@@ -349,23 +366,37 @@ select {
 
 @media (max-width: 720px) {
   .panel {
-    position: static;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
     width: auto;
-    margin: 12px;
-    max-height: 40vh;
+    margin: 0;
+    border-radius: 18px 18px 0 0;
+    max-height: 60vh;
     overflow: auto;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+    transition: transform 180ms ease;
+  }
+  body.panel-collapsed .panel {
+    transform: translateY(calc(100% - 56px));
+  }
+  .panel-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
   .legend {
     left: auto;
     right: 12px;
+    top: 12px;
+    bottom: auto;
   }
   .app {
-    display: flex;
-    flex-direction: column;
     min-height: 100vh;
   }
   #map {
-    flex: 1 1 auto;
-    min-height: 50vh;
+    height: 100vh;
   }
 }
