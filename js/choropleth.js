@@ -75,7 +75,7 @@ function interpolateColor(a, b, t) {
 function colorFor(value, breaks) {
   const max = breaks[1] || 1;
   const linear = Math.min(1, Math.max(0, value / max));
-  const t = Math.sqrt(linear);
+  const t = Math.log1p(linear * 9) / Math.log1p(9);
   const scaled = t * (gradientStops.length - 1);
   const idx = Math.floor(scaled);
   const localT = scaled - idx;
