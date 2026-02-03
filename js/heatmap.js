@@ -7,7 +7,6 @@ const map = L.map("map", {
   zoomControl: false,
   maxZoom: 10,
   minZoom: 6,
-  preferCanvas: true,
 }).fitBounds(ZIM_BOUNDS);
 L.control.zoom({ position: "topleft" }).addTo(map);
 L.control.scale({ position: "bottomleft", imperial: false }).addTo(map);
@@ -240,7 +239,7 @@ function addZimbabweMask(feature) {
   ];
 
   const maskPane = map.createPane("maskPane");
-  maskPane.style.zIndex = 250;
+  maskPane.style.zIndex = 350;
 
   const outlinePane = map.createPane("outlinePane");
   outlinePane.style.zIndex = 470;
@@ -252,6 +251,7 @@ function addZimbabweMask(feature) {
     fillOpacity: 1,
     fillRule: "evenodd",
     interactive: false,
+    renderer: L.svg(),
   }).addTo(map);
 
   L.geoJSON(feature, {

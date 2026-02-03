@@ -98,4 +98,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Boosted heatmap intensity and lowered max to bring out bright yellow hotspots.
 - Switched to a dark, basemap-free aesthetic with a purple→green→yellow ramp.
 - Adjusted pane ordering so the mask sits below the heat layer and base fill.
-- Removed rectangle fallback so base fill only renders with Zimbabwe boundary.
+- Moved boundary mask above the heat layer and forced SVG rendering to clip the square.
