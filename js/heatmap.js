@@ -85,14 +85,14 @@ function buildHeatPoints() {
   if (activePrimary) {
     primaryFeatures.forEach((feature) => {
       const [lon, lat] = feature.geometry.coordinates;
-      points.push([lat, lon, 0.2]);
+      points.push([lat, lon, 0.35]);
     });
   }
 
   if (activeSecondary) {
     secondaryFeatures.forEach((feature) => {
       const [lon, lat] = feature.geometry.coordinates;
-      points.push([lat, lon, 0.3]);
+      points.push([lat, lon, 0.5]);
     });
   }
 
@@ -164,7 +164,7 @@ function updateHeatLayer() {
     blur: 8,
     maxZoom: 9,
     minOpacity: 0.6,
-    max: 0.4,
+    max: 0.25,
     gradient: {
       0.0: "#041527",
       0.4: "#0b355d",

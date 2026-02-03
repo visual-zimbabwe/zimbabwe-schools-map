@@ -95,3 +95,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Updated heatmap palette to dark blue (low) and bright yellow (high).
 - Anchored zero density to dark blue and strongest density to bright yellow.
 - Added a dark-blue base fill layer so zero-density areas never appear white.
+- Boosted heatmap intensity and lowered max to bring out bright yellow hotspots.
