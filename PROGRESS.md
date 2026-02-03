@@ -74,3 +74,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Pulled OSM school POIs for Zimbabwe and generated candidate matches for missing coordinates.
 - Removed OSM extract and candidate match files.
 - Drafted visualization plan outline for school geospatial storytelling request.
+- Saved visualization plan to `Visualization_Plan.md`.
