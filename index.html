@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Map of Secondary Schools — Zimbabwe</title>
+    <title>Map of Schools - Zimbabwe</title>
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -23,18 +23,33 @@
     <div class="legend" aria-label="Legend">
       <div class="legend-title">Legend</div>
       <div class="legend-item">
-        <span class="legend-dot"></span>
+        <span class="legend-dot legend-dot--primary"></span>
+        Primary Schools
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot legend-dot--secondary"></span>
         Secondary Schools
       </div>
     </div>
     <div class="panel" aria-label="Filters and summary">
-      <div class="panel-title">Secondary Schools</div>
+      <div class="panel-title">Schools</div>
+      <div class="panel-section panel-levels">
+        <div class="panel-subtitle">School level</div>
+        <label class="panel-check" for="primaryToggle">
+          <input id="primaryToggle" type="checkbox" checked />
+          Primary
+        </label>
+        <label class="panel-check" for="secondaryToggle">
+          <input id="secondaryToggle" type="checkbox" checked />
+          Secondary
+        </label>
+      </div>
       <label class="panel-label" for="searchInput">Search</label>
       <input
         id="searchInput"
         class="panel-input"
         type="text"
-        placeholder="School name…"
+        placeholder="School name..."
       />
       <label class="panel-label" for="provinceSelect">Province</label>
       <select id="provinceSelect" class="panel-select"></select>
@@ -49,6 +64,20 @@
           <span class="panel-metric-label">In view</span>
           <span id="inViewCount" class="panel-metric-value">0</span>
         </div>
+        <div class="panel-metric">
+          <span class="panel-metric-label">
+            <span class="panel-dot panel-dot--primary"></span>
+            Primary (filtered)
+          </span>
+          <span id="primaryCount" class="panel-metric-value">0</span>
+        </div>
+        <div class="panel-metric">
+          <span class="panel-metric-label">
+            <span class="panel-dot panel-dot--secondary"></span>
+            Secondary (filtered)
+          </span>
+          <span id="secondaryCount" class="panel-metric-value">0</span>
+        </div>
       </div>
       <div class="panel-section">
         <div class="panel-subtitle">Top Provinces (filtered)</div>
@@ -58,6 +87,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="data/primary_schools.js"></script>
     <script src="data/secondary_schools.js"></script>
     <script src="js/map.js"></script>
   </body>

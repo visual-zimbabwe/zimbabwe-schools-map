@@ -28,3 +28,6 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Moved filter panel to top-right to avoid covering zoom controls.
 - Moved legend to bottom-right to avoid overlapping the panel.
 - Planned approach for adding primary schools and dual-level visualization (data pipeline + UI layers).
+- Added primary schools GeoJSON/JS outputs and a build script for both levels.
+- Updated map UI and logic to show primary + secondary with toggles, legend, and counts.
+- Updated README to reflect primary + secondary map outputs.
