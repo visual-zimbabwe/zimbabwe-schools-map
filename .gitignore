@@ -1,7 +1,7 @@
 # Data files (downloaded locally)
 location_of_schools.csv
 
-data/*.geojson
+# Generated data (commit GeoJSON, ignore JS)
 data/*.js
 
 # Local-only docs and datasets
