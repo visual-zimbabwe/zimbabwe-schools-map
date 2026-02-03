@@ -28,6 +28,7 @@ let secondaryFeatures = [];
 let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
+const HEAT_RADIUS_KM = 10;
 
 function primeWindowData() {
   if (window.PRIMARY_SCHOOLS && window.SECONDARY_SCHOOLS) {
@@ -133,29 +134,38 @@ function updateHeatLayer() {
   if (!size || size.y === 0 || size.x === 0) {
     return;
   }
+  const heatOptions = {
+    radius: heatRadiusPx(),
+    blur: 8,
+    maxZoom: 9,
+    minOpacity: 0.28,
+    max: 0.4,
+    gradient: {
+      0.0: "#07162c",
+      0.3: "#0f3a5a",
+      0.31: "#1f78b4",
+      0.6: "#1f78b4",
+      0.61: "#f2a93b",
+      0.85: "#f2a93b",
+      0.86: "#ffe09a",
+      1.0: "#fff7c9",
+    },
+  };
   if (heatLayer) {
-    heatLayer.setLatLngs(points);
-  } else {
-    heatLayer = L.heatLayer(points, {
-      radius: 10,
-      blur: 8,
-      maxZoom: 9,
-      minOpacity: 0.28,
-      max: 0.4,
-      gradient: {
-        0.0: "#07162c",
-        0.3: "#0f3a5a",
-        0.31: "#1f78b4",
-        0.6: "#1f78b4",
-        0.61: "#f2a93b",
-        0.85: "#f2a93b",
-        0.86: "#ffe09a",
-        1.0: "#fff7c9",
-      },
-    }).addTo(map);
+    map.removeLayer(heatLayer);
   }
+  heatLayer = L.heatLayer(points, heatOptions).addTo(map);
   updateStats();
   updateRanks();
+}
+
+function heatRadiusPx() {
+  const zoom = map.getZoom();
+  const lat = map.getCenter().lat;
+  const metersPerPixel =
+    (156543.03392 * Math.cos((lat * Math.PI) / 180)) / Math.pow(2, zoom);
+  const px = (HEAT_RADIUS_KM * 1000) / metersPerPixel;
+  return Math.max(6, Math.min(60, Math.round(px)));
 }
 
 function scheduleHeatLayer() {
@@ -199,11 +209,11 @@ Promise.all([
         "No school data loaded. Use a local server or verify data files.";
       return;
     }
-    map.whenReady(() => {
-      map.invalidateSize();
-      scheduleHeatLayer();
-    });
-    loading.style.display = "none";
+map.whenReady(() => {
+  map.invalidateSize();
+  scheduleHeatLayer();
+});
+loading.style.display = "none";
   })
   .catch((err) => {
     loading.textContent = "Failed to load school data.";
@@ -219,6 +229,11 @@ if (isFileProtocol && primeWindowData()) {
   });
   loading.style.display = "none";
 }
+
+map.on("zoomend moveend", () => {
+  if (!primaryFeatures.length && !secondaryFeatures.length) return;
+  updateHeatLayer();
+});
 
 togglePrimary.addEventListener("click", () => {
   togglePrimary.classList.toggle("active");
