@@ -106,6 +106,13 @@ function setMultiSelectOptions(container, values, placeholder) {
   const menu = container.querySelector(".multi-menu");
   menu.innerHTML = "";
 
+  const actions = document.createElement("div");
+  actions.className = "multi-actions";
+  actions.innerHTML =
+    '<button type="button" class="multi-action-btn" data-action="select-all">Select all</button>' +
+    '<button type="button" class="multi-action-btn" data-action="clear-all">Clear</button>';
+  menu.appendChild(actions);
+
   values.forEach((value) => {
     const option = document.createElement("label");
     option.className = "multi-option";
@@ -149,6 +156,23 @@ function setupMultiSelect(container, placeholder, onChange) {
     if (!container.contains(event.target)) {
       container.classList.remove("open");
     }
+  });
+
+  container.addEventListener("click", (event) => {
+    const button = event.target.closest(".multi-action-btn");
+    if (!button) return;
+    const action = button.getAttribute("data-action");
+    if (action === "select-all") {
+      container
+        .querySelectorAll("input[type='checkbox']")
+        .forEach((input) => (input.checked = true));
+    } else if (action === "clear-all") {
+      container
+        .querySelectorAll("input[type='checkbox']")
+        .forEach((input) => (input.checked = false));
+    }
+    updateMultiSelectLabel(container, placeholder);
+    onChange();
   });
 
   container.addEventListener("change", (event) => {
