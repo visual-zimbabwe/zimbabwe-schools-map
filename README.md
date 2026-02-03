@@ -6,6 +6,7 @@ Minimal, static web map of Zimbabwe's primary and secondary schools using Leafle
 - Primary + secondary school layers with clustering
 - Search by name, filter by province/district, per-level counts
 - Offline-friendly static map once data is generated locally
+- National accessibility heatmap page with density and top/bottom province rankings
 
 ## Live site
 - GitHub Pages: `https://visual-zimbabwe.github.io/zimbabwe-schools-map/`
@@ -37,6 +38,7 @@ This generates:
 
 ## Run locally
 - Open `index.html` in a browser, or
+- Open `heatmap.html` for the national accessibility heatmap, or
 - Serve a static server from the repo root.
 
 ## Project structure

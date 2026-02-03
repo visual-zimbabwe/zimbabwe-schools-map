@@ -75,3 +75,6 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Removed OSM extract and candidate match files.
 - Drafted visualization plan outline for school geospatial storytelling request.
 - Saved visualization plan to `Visualization_Plan.md`.
+- Implemented the National Accessibility Heatmap page with Leaflet heat layer.
+- Added heatmap styling, density legend, and province hotspot/coldspot rankings.
+- Updated README with heatmap page entry.
