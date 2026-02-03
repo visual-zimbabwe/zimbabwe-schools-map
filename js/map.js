@@ -171,8 +171,18 @@ Promise.allSettled([boundaryPromise, schoolsPromise])
       });
       mask.addTo(map);
 
+      // Boundary outline
+      const boundaryLayer = L.geoJSON(boundaryGeo, {
+        pane: "boundaryPane",
+        style: {
+          color: "#111",
+          weight: 2,
+          fill: false,
+        },
+      });
+      boundaryLayer.addTo(map);
+
       try {
-        const boundaryLayer = L.geoJSON(boundaryGeo);
         map.fitBounds(boundaryLayer.getBounds(), { padding: [16, 16] });
       } catch (err) {
         // fallback to default view
