@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Map of Schools - Zimbabwe</title>
+    <title>Zimbabwe Schools Explorer</title>
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -16,77 +16,578 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
     />
-    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;600&display=swap");
+
+      :root {
+        --ink: #0b1320;
+        --slate: #2c3a4d;
+        --mist: #f3f5f7;
+        --sun: #f4c430;
+        --leaf: #2f8f4e;
+        --ember: #c0392b;
+        --coal: #111111;
+        --oasis: #2a9d8f;
+        --sky: #1f78b4;
+        --card: rgba(255, 255, 255, 0.96);
+        --shadow: 0 18px 40px rgba(10, 20, 40, 0.16);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Space Grotesk", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at 20% 20%, #f8f6f0 0%, #e9edf2 40%, #dfe6ef 100%);
+      }
+
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+
+      .app {
+        position: relative;
+        height: 100%;
+        width: 100%;
+      }
+
+      .panel {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        z-index: 1000;
+        width: min(360px, 92vw);
+        background: var(--card);
+        border-radius: 18px;
+        padding: 16px 18px 14px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(6px);
+      }
+
+      .panel h1 {
+        font-family: "Fraunces", serif;
+        font-weight: 700;
+        font-size: 22px;
+        margin: 0 0 6px;
+      }
+
+      .panel p {
+        margin: 0 0 12px;
+        color: var(--slate);
+        font-size: 13px;
+      }
+
+      .chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+
+      .chip {
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 160ms ease;
+      }
+
+      .chip.primary {
+        background: rgba(47, 143, 78, 0.12);
+        color: var(--leaf);
+        border-color: rgba(47, 143, 78, 0.3);
+      }
+
+      .chip.secondary {
+        background: rgba(31, 120, 180, 0.12);
+        color: var(--sky);
+        border-color: rgba(31, 120, 180, 0.3);
+      }
+
+      .chip.active {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .field {
+        margin-bottom: 10px;
+      }
+
+      label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: var(--slate);
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid #d5dbe3;
+        background: #ffffff;
+        font-size: 13px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .stat {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 8px 10px;
+        border: 1px solid #e5e9ef;
+      }
+
+      .stat span {
+        display: block;
+        font-size: 11px;
+        color: #627085;
+      }
+
+      .stat strong {
+        font-size: 16px;
+      }
+
+      .legend {
+        position: absolute;
+        bottom: 18px;
+        left: 18px;
+        z-index: 1000;
+        background: var(--card);
+        border-radius: 14px;
+        padding: 10px 12px;
+        box-shadow: var(--shadow);
+        font-size: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 4px 0;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .dot.primary {
+        background: var(--leaf);
+        box-shadow: 0 0 10px rgba(47, 143, 78, 0.5);
+      }
+
+      .dot.secondary {
+        background: var(--sky);
+        box-shadow: 0 0 10px rgba(31, 120, 180, 0.5);
+      }
+
+      .story {
+        margin-top: 10px;
+        padding: 10px 12px;
+        background: linear-gradient(135deg, rgba(244, 196, 48, 0.15), rgba(47, 143, 78, 0.12));
+        border-radius: 12px;
+        font-size: 12px;
+      }
+
+      .leaflet-popup-content-wrapper {
+        border-radius: 14px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+      }
+
+      .popup-title {
+        font-family: "Fraunces", serif;
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+
+      .popup-row {
+        font-size: 12px;
+        color: var(--slate);
+      }
+
+      .school-marker {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+      }
+
+      .marker-primary {
+        background: var(--leaf);
+      }
+
+      .marker-secondary {
+        background: var(--sky);
+      }
+
+      .loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.78);
+        z-index: 2000;
+        font-weight: 600;
+      }
+
+      @media (max-width: 720px) {
+        .panel {
+          position: static;
+          width: auto;
+          margin: 12px;
+        }
+        .legend {
+          left: auto;
+          right: 12px;
+        }
+        .app {
+          display: flex;
+          flex-direction: column;
+        }
+        #map {
+          height: calc(100% - 320px);
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="map"></div>
-    <div class="legend" aria-label="Legend">
-      <div class="legend-title">Legend</div>
-      <div class="legend-item">
-        <span class="legend-dot legend-dot--primary"></span>
-        Primary Schools
-      </div>
-      <div class="legend-item">
-        <span class="legend-dot legend-dot--secondary"></span>
-        Secondary Schools
-      </div>
-    </div>
-    <div class="panel" aria-label="Filters and summary">
-      <div class="panel-title">Schools</div>
-      <div class="panel-section panel-levels">
-        <div class="panel-subtitle">School level</div>
-        <label class="panel-check" for="primaryToggle">
-          <input id="primaryToggle" type="checkbox" checked />
-          Primary
-        </label>
-        <label class="panel-check" for="secondaryToggle">
-          <input id="secondaryToggle" type="checkbox" checked />
-          Secondary
-        </label>
-      </div>
-      <label class="panel-label" for="searchInput">Search</label>
-      <input
-        id="searchInput"
-        class="panel-input"
-        type="text"
-        placeholder="School name..."
-      />
-      <label class="panel-label" for="provinceSelect">Province</label>
-      <select id="provinceSelect" class="panel-select"></select>
-      <label class="panel-label" for="districtSelect">District</label>
-      <select id="districtSelect" class="panel-select"></select>
-      <div class="panel-section">
-        <div class="panel-metric">
-          <span class="panel-metric-label">Filtered total</span>
-          <span id="filteredCount" class="panel-metric-value">0</span>
+    <div class="app">
+      <div id="map"></div>
+      <div class="panel" aria-label="Filters and story">
+        <h1>Zimbabwe Schools Explorer</h1>
+        <p>Discover learning hubs across the country. Zoom in to explore communities and compare school levels.</p>
+
+        <div class="chips">
+          <button class="chip primary active" id="togglePrimary">Primary</button>
+          <button class="chip secondary active" id="toggleSecondary">Secondary</button>
         </div>
-        <div class="panel-metric">
-          <span class="panel-metric-label">In view</span>
-          <span id="inViewCount" class="panel-metric-value">0</span>
+
+        <div class="field">
+          <label for="searchInput">Search by school name</label>
+          <input id="searchInput" type="text" placeholder="Start typing a school name" />
         </div>
-        <div class="panel-metric">
-          <span class="panel-metric-label">
-            <span class="panel-dot panel-dot--primary"></span>
-            Primary (filtered)
-          </span>
-          <span id="primaryCount" class="panel-metric-value">0</span>
+        <div class="field">
+          <label for="provinceSelect">Province</label>
+          <select id="provinceSelect"></select>
         </div>
-        <div class="panel-metric">
-          <span class="panel-metric-label">
-            <span class="panel-dot panel-dot--secondary"></span>
-            Secondary (filtered)
-          </span>
-          <span id="secondaryCount" class="panel-metric-value">0</span>
+        <div class="field">
+          <label for="districtSelect">District</label>
+          <select id="districtSelect"></select>
         </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span>Total (filtered)</span>
+            <strong id="filteredCount">0</strong>
+          </div>
+          <div class="stat">
+            <span>In view</span>
+            <strong id="inViewCount">0</strong>
+          </div>
+          <div class="stat">
+            <span>Primary</span>
+            <strong id="primaryCount">0</strong>
+          </div>
+          <div class="stat">
+            <span>Secondary</span>
+            <strong id="secondaryCount">0</strong>
+          </div>
+        </div>
+
+        <div class="story" id="storyText">Zoom in to see local clusters and click markers to learn about each school.</div>
       </div>
-      <div class="panel-section">
-        <div class="panel-subtitle">Top Provinces (filtered)</div>
-        <ol id="topProvinces" class="panel-list"></ol>
+
+      <div class="legend" aria-label="Legend">
+        <div class="legend-item"><span class="dot primary"></span>Primary schools</div>
+        <div class="legend-item"><span class="dot secondary"></span>Secondary schools</div>
       </div>
+
+      <div class="loading" id="loading">Loading schools…</div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-    <script src="js/map.js"></script>
+    <script>
+      const ZIM_BOUNDS = [
+        [-22.5, 25.2],
+        [-15.3, 33.2]
+      ];
+
+      const map = L.map("map", { zoomControl: false }).fitBounds(ZIM_BOUNDS);
+      L.control.zoom({ position: "topright" }).addTo(map);
+
+      const baseLayers = {
+        "Clean Light": L.tileLayer(
+          "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+          { attribution: "&copy; OpenStreetMap contributors &copy; CARTO" }
+        ),
+        "Terrain": L.tileLayer(
+          "https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg",
+          { attribution: "&copy; OpenStreetMap contributors &copy; Stamen" }
+        )
+      };
+      baseLayers["Clean Light"].addTo(map);
+      L.control.layers(baseLayers, null, { position: "bottomright" }).addTo(map);
+
+      const clusterOptions = {
+        showCoverageOnHover: false,
+        maxClusterRadius: 48,
+        spiderfyOnMaxZoom: true,
+        iconCreateFunction: (cluster) => {
+          const count = cluster.getChildCount();
+          const size = count < 50 ? 36 : count < 200 ? 44 : 52;
+          return L.divIcon({
+            html: `<div style="
+              width:${size}px;height:${size}px;border-radius:50%;
+              display:flex;align-items:center;justify-content:center;
+              background:radial-gradient(circle at 30% 30%, rgba(244,196,48,0.9), rgba(17,17,17,0.9));
+              color:white;font-weight:700;font-size:12px;box-shadow:0 8px 18px rgba(0,0,0,0.2)
+            ">${count}</div>`,
+            className: "",
+            iconSize: [size, size]
+          });
+        }
+      };
+
+      const primaryCluster = L.markerClusterGroup(clusterOptions);
+      const secondaryCluster = L.markerClusterGroup(clusterOptions);
+
+      const searchInput = document.getElementById("searchInput");
+      const provinceSelect = document.getElementById("provinceSelect");
+      const districtSelect = document.getElementById("districtSelect");
+      const filteredCountEl = document.getElementById("filteredCount");
+      const inViewCountEl = document.getElementById("inViewCount");
+      const primaryCountEl = document.getElementById("primaryCount");
+      const secondaryCountEl = document.getElementById("secondaryCount");
+      const storyText = document.getElementById("storyText");
+      const loading = document.getElementById("loading");
+      const togglePrimary = document.getElementById("togglePrimary");
+      const toggleSecondary = document.getElementById("toggleSecondary");
+
+      let primaryFeatures = [];
+      let secondaryFeatures = [];
+      let currentFiltered = [];
+
+      function normalize(value) {
+        return String(value || "").trim().toLowerCase();
+      }
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function buildPopup(props) {
+        return `
+          <div class="popup-title">${escapeHtml(props.Name)}</div>
+          <div class="popup-row"><strong>Level:</strong> ${escapeHtml(props.SchoolLevel)}</div>
+          <div class="popup-row"><strong>Province:</strong> ${escapeHtml(props.Province)}</div>
+          <div class="popup-row"><strong>District:</strong> ${escapeHtml(props.District)}</div>
+        `;
+      }
+
+      function makeMarker(feature, isPrimary) {
+        const icon = L.divIcon({
+          className: `school-marker ${isPrimary ? "marker-primary" : "marker-secondary"}`,
+          iconSize: [16, 16],
+          iconAnchor: [8, 8]
+        });
+        const [lon, lat] = feature.geometry.coordinates;
+        const marker = L.marker([lat, lon], { icon });
+        marker.bindPopup(buildPopup(feature.properties));
+        return marker;
+      }
+
+      function setOptions(select, values, placeholder) {
+        const current = select.value;
+        select.innerHTML = "";
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = placeholder;
+        select.appendChild(opt);
+        values.forEach((value) => {
+          const item = document.createElement("option");
+          item.value = value;
+          item.textContent = value;
+          select.appendChild(item);
+        });
+        if ([...select.options].some((o) => o.value === current)) {
+          select.value = current;
+        }
+      }
+
+      function activeLevels() {
+        return {
+          primary: togglePrimary.classList.contains("active"),
+          secondary: toggleSecondary.classList.contains("active")
+        };
+      }
+
+      function filterFeatures(features, query, province, district) {
+        return features.filter((feature) => {
+          const props = feature.properties || {};
+          const name = normalize(props.Name);
+          if (query && !name.includes(query)) return false;
+          if (province && props.Province !== province) return false;
+          if (district && props.District !== district) return false;
+          return true;
+        });
+      }
+
+      function updateStory() {
+        const { primary, secondary } = activeLevels();
+        if (primary && secondary) {
+          storyText.textContent = "Both levels are visible. Compare access and density across provinces.";
+        } else if (primary) {
+          storyText.textContent = "Primary schools shape early learning access. Zoom in for community detail.";
+        } else if (secondary) {
+          storyText.textContent = "Secondary schools show pathways to advanced learning. Explore clusters.";
+        } else {
+          storyText.textContent = "Select a level to start exploring schools across Zimbabwe.";
+        }
+      }
+
+      function refreshDistrictOptions() {
+        const province = provinceSelect.value;
+        const levels = activeLevels();
+        const all = [
+          ...(levels.primary ? primaryFeatures : []),
+          ...(levels.secondary ? secondaryFeatures : [])
+        ];
+        const districts = all
+          .filter((f) => !province || f.properties.Province === province)
+          .map((f) => f.properties.District)
+          .filter(Boolean);
+        const unique = [...new Set(districts)].sort();
+        setOptions(districtSelect, unique, "All districts");
+      }
+
+      function updateCounts(filteredPrimary, filteredSecondary) {
+        const combined = [...filteredPrimary, ...filteredSecondary];
+        currentFiltered = combined;
+        filteredCountEl.textContent = combined.length.toLocaleString();
+        primaryCountEl.textContent = filteredPrimary.length.toLocaleString();
+        secondaryCountEl.textContent = filteredSecondary.length.toLocaleString();
+
+        const bounds = map.getBounds();
+        const inView = combined.filter((f) => {
+          const [lon, lat] = f.geometry.coordinates;
+          return bounds.contains([lat, lon]);
+        });
+        inViewCountEl.textContent = inView.length.toLocaleString();
+      }
+
+      function applyFilters() {
+        const { primary, secondary } = activeLevels();
+        const query = normalize(searchInput.value);
+        const province = provinceSelect.value;
+        const district = districtSelect.value;
+
+        primaryCluster.clearLayers();
+        secondaryCluster.clearLayers();
+
+        const filteredPrimary = primary
+          ? filterFeatures(primaryFeatures, query, province, district)
+          : [];
+        const filteredSecondary = secondary
+          ? filterFeatures(secondaryFeatures, query, province, district)
+          : [];
+
+        filteredPrimary.forEach((feature) => primaryCluster.addLayer(makeMarker(feature, true)));
+        filteredSecondary.forEach((feature) => secondaryCluster.addLayer(makeMarker(feature, false)));
+
+        updateCounts(filteredPrimary, filteredSecondary);
+        updateStory();
+      }
+
+      function loadGeoJSON(url) {
+        return fetch(url).then((response) => {
+          if (!response.ok) throw new Error(`${url} -> ${response.status}`);
+          return response.json();
+        });
+      }
+
+      Promise.all([
+        loadGeoJSON("data/primary_schools.geojson"),
+        loadGeoJSON("data/secondary_schools.geojson")
+      ])
+        .then(([primary, secondary]) => {
+          primaryFeatures = primary.features || [];
+          secondaryFeatures = secondary.features || [];
+
+          map.addLayer(primaryCluster);
+          map.addLayer(secondaryCluster);
+
+          const provinces = [
+            ...new Set(
+              [...primaryFeatures, ...secondaryFeatures]
+                .map((f) => f.properties.Province)
+                .filter(Boolean)
+            )
+          ].sort();
+          setOptions(provinceSelect, provinces, "All provinces");
+          refreshDistrictOptions();
+          applyFilters();
+          loading.style.display = "none";
+        })
+        .catch((err) => {
+          loading.textContent = "Failed to load school data.";
+          // eslint-disable-next-line no-console
+          console.error(err);
+        });
+
+      searchInput.addEventListener("input", applyFilters);
+      provinceSelect.addEventListener("change", () => {
+        refreshDistrictOptions();
+        applyFilters();
+      });
+      districtSelect.addEventListener("change", applyFilters);
+
+      togglePrimary.addEventListener("click", () => {
+        togglePrimary.classList.toggle("active");
+        refreshDistrictOptions();
+        applyFilters();
+      });
+      toggleSecondary.addEventListener("click", () => {
+        toggleSecondary.classList.toggle("active");
+        refreshDistrictOptions();
+        applyFilters();
+      });
+
+      map.on("moveend zoomend", () => {
+        updateCounts(
+          activeLevels().primary
+            ? filterFeatures(primaryFeatures, normalize(searchInput.value), provinceSelect.value, districtSelect.value)
+            : [],
+          activeLevels().secondary
+            ? filterFeatures(secondaryFeatures, normalize(searchInput.value), provinceSelect.value, districtSelect.value)
+            : []
+        );
+      });
+    </script>
   </body>
 </html>
