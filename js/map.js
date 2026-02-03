@@ -1,21 +1,14 @@
 /* global L */
 const ZIMBABWE_CENTER = [-19.0154, 29.1549];
 const INITIAL_ZOOM = 6;
-const ZIMBABWE_BOUNDS = [
-  [-22.45, 25.24], // southwest
-  [-15.6, 33.05], // northeast
-];
 
 const map = L.map("map", {
   zoomControl: true,
   attributionControl: true,
-  maxBounds: ZIMBABWE_BOUNDS,
-  maxBoundsViscosity: 1.0,
 }).setView(ZIMBABWE_CENTER, INITIAL_ZOOM);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 18,
-  minZoom: 6,
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
@@ -25,28 +18,6 @@ const clusterLayer = L.markerClusterGroup({
   spiderfyDistanceMultiplier: 1.2,
   maxClusterRadius: 50,
 });
-
-function lngLatToLatLng(coords) {
-  return coords.map((c) => [c[1], c[0]]);
-}
-
-function extractHoles(geometry) {
-  const holes = [];
-  if (geometry.type === "Polygon") {
-    const rings = geometry.coordinates || [];
-    if (rings.length > 0) {
-      holes.push(lngLatToLatLng(rings[0]));
-    }
-  } else if (geometry.type === "MultiPolygon") {
-    const polys = geometry.coordinates || [];
-    polys.forEach((poly) => {
-      if (poly.length > 0) {
-        holes.push(lngLatToLatLng(poly[0]));
-      }
-    });
-  }
-  return holes;
-}
 
 function escapeHtml(value) {
   return String(value || "")
@@ -72,87 +43,34 @@ function buildPopup(props) {
   `;
 }
 
-function fetchJson(url) {
-  return fetch(url).then((response) => {
-    if (!response.ok) {
-      throw new Error(`${url} -> ${response.status}`);
-    }
-    return response.json();
-  });
-}
+fetch("data/secondary_schools.geojson")
+  .then((response) => response.json())
+  .then((geojson) => {
+    const layer = L.geoJSON(geojson, {
+      pointToLayer: (feature, latlng) =>
+        L.circleMarker(latlng, {
+          radius: 4,
+          fillColor: "#1f78b4",
+          color: "#0b3c5d",
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.9,
+        }),
+      onEachFeature: (feature, layer) => {
+        layer.bindPopup(buildPopup(feature.properties));
+      },
+    });
 
-const boundaryPromise = window.ZIMBABWE_BOUNDARY
-  ? Promise.resolve(window.ZIMBABWE_BOUNDARY)
-  : fetchJson("data/zimbabwe_boundary.geojson");
-const schoolsPromise = fetchJson("data/secondary_schools.geojson");
+    clusterLayer.addLayer(layer);
+    map.addLayer(clusterLayer);
 
-Promise.allSettled([boundaryPromise, schoolsPromise])
-  .then((results) => {
-    const boundaryResult = results[0];
-    const schoolsResult = results[1];
-
-    if (boundaryResult.status === "fulfilled") {
-      const boundaryGeo = boundaryResult.value;
-      const boundaryFeature = boundaryGeo.features[0];
-
-      // Mask outside Zimbabwe
-      const worldRing = [
-        [90, -180],
-        [90, 180],
-        [-90, 180],
-        [-90, -180],
-      ];
-      const holes = extractHoles(boundaryFeature.geometry);
-      const mask = L.polygon([worldRing, ...holes], {
-        stroke: false,
-        fillColor: "#ffffff",
-        fillOpacity: 1,
-        interactive: false,
-      });
-      mask.addTo(map);
-
-      // Boundary outline
-      const boundaryLayer = L.geoJSON(boundaryGeo, {
-        style: {
-          color: "#111",
-          weight: 2,
-          fill: false,
-        },
-      });
-      boundaryLayer.addTo(map);
-
-      try {
-        map.fitBounds(boundaryLayer.getBounds(), { padding: [16, 16] });
-      } catch (err) {
-        // fallback to default view
-      }
-    }
-
-    if (schoolsResult.status === "fulfilled") {
-      const schoolsGeo = schoolsResult.value;
-      const schoolsLayer = L.geoJSON(schoolsGeo, {
-        pointToLayer: (feature, latlng) =>
-          L.circleMarker(latlng, {
-            radius: 4,
-            fillColor: "#1f78b4",
-            color: "#0b3c5d",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.9,
-          }),
-        onEachFeature: (feature, layer) => {
-          layer.bindPopup(buildPopup(feature.properties));
-        },
-      });
-
-      clusterLayer.addLayer(schoolsLayer);
-      map.addLayer(clusterLayer);
-    } else {
-      // eslint-disable-next-line no-console
-      console.error("Failed to load school data:", schoolsResult.reason);
+    try {
+      map.fitBounds(clusterLayer.getBounds(), { padding: [20, 20] });
+    } catch (err) {
+      // fallback to default view
     }
   })
   .catch((err) => {
     // eslint-disable-next-line no-console
-    console.error("Failed to load map data:", err);
+    console.error("Failed to load school data:", err);
   });
