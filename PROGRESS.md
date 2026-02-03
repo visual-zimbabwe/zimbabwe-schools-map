@@ -85,3 +85,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Ensured heatmap stats render immediately from embedded data on file protocol.
 - Set explicit heatmap container height to prevent zero-height map rendering.
 - Tuned heatmap intensity, radius, blur, and gradient for clearer contrast.
+- Increased heatmap contrast further with tighter radius/blur and lower max.
