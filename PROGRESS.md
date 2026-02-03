@@ -13,3 +13,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Generated `data/secondary_schools.geojson` from `location_of_schools.csv`.
 - Removed CDN integrity attributes to avoid Leaflet/cluster assets blocking.
 - Constrained map bounds and zoom to Zimbabwe extent.
+- Added Zimbabwe boundary mask and outline.
