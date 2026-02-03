@@ -98,3 +98,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Boosted heatmap intensity and lowered max to bring out bright yellow hotspots.
 - Switched to a dark, basemap-free aesthetic with a purple→green→yellow ramp.
 - Adjusted pane ordering so the mask sits below the heat layer and base fill.
+- Replaced the square base-fill rectangle with the Zimbabwe boundary fill.

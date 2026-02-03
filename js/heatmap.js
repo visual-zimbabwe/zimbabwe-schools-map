@@ -29,6 +29,7 @@ let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
 let baseFill = null;
+let zimBoundaryFeature = null;
 const HEAT_RADIUS_KM = 5;
 const BASE_GRID_STEP_DEG = 0.25;
 const BASE_GRID_WEIGHT = 0.02;
@@ -176,12 +177,24 @@ function updateHeatLayer() {
   if (!baseFill) {
     const basePane = map.createPane("baseFillPane");
     basePane.style.zIndex = 260;
-    baseFill = L.rectangle(ZIM_BOUNDS, {
-      pane: "baseFillPane",
-      stroke: false,
-      fillColor: BASE_FILL_COLOR,
-      fillOpacity: 1,
-    }).addTo(map);
+    if (zimBoundaryFeature) {
+      baseFill = L.geoJSON(zimBoundaryFeature, {
+        pane: "baseFillPane",
+        style: {
+          color: BASE_FILL_COLOR,
+          weight: 0,
+          fillColor: BASE_FILL_COLOR,
+          fillOpacity: 1,
+        },
+      }).addTo(map);
+    } else {
+      baseFill = L.rectangle(ZIM_BOUNDS, {
+        pane: "baseFillPane",
+        stroke: false,
+        fillColor: BASE_FILL_COLOR,
+        fillOpacity: 1,
+      }).addTo(map);
+    }
   }
   const heatPane = map.createPane("heatPane");
   heatPane.style.zIndex = 300;
@@ -224,6 +237,7 @@ function extractRings(geometry) {
 }
 
 function addZimbabweMask(feature) {
+  zimBoundaryFeature = feature;
   const rings = extractRings(feature.geometry);
   if (!rings.length) return;
 
