@@ -239,6 +239,8 @@ function addZimbabweMask(feature) {
     stroke: false,
     fillColor: "#0b1320",
     fillOpacity: 1,
+    fillRule: "evenodd",
+    interactive: false,
   }).addTo(map);
 
   L.geoJSON(feature, {
