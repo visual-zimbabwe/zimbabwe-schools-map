@@ -46,7 +46,7 @@ body {
 .panel {
   position: absolute;
   top: 18px;
-  left: 18px;
+  right: 18px;
   z-index: 1000;
   width: min(360px, 92vw);
   background: var(--card);

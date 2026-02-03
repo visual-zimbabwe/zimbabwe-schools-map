@@ -4,7 +4,7 @@ const ZIM_BOUNDS = [
 ];
 
 const map = L.map("map", { zoomControl: false }).fitBounds(ZIM_BOUNDS);
-L.control.zoom({ position: "topright" }).addTo(map);
+L.control.zoom({ position: "topleft" }).addTo(map);
 
 const baseLayers = {
   "Clean Light": L.tileLayer(
