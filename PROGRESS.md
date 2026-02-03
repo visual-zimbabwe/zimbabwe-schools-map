@@ -1,0 +1,76 @@
+# Progress Log
+
+Rule: Update this file whenever changes are made (files, data, plans, or decisions).
+
+## 2026-02-03
+- Added initial repository README.
+- Established progress logging rule.
+- Added AGENTS note to always update PROGRESS.md on changes.
+- Added AGENTS note to always commit changes without asking for permission.
+- Initialized git repository.
+- Added detailed project specification for the Map of Secondary Schools MVP.
+- Built Web v1.0 map: added static app files, styles, and Leaflet clustering.
+- Generated `data/secondary_schools.geojson` from `location_of_schools.csv`.
+- Removed CDN integrity attributes to avoid Leaflet/cluster assets blocking.
+- Constrained map bounds and zoom to Zimbabwe extent.
+- Added Zimbabwe boundary mask and outline.
+- Added boundary JS fallback and resilient loading for local file usage.
+- Increased mask opacity and page background to fully hide outside boundaries.
+- Moved mask and boundary to dedicated panes above tiles to prevent flicker.
+- Added SVG clipPath to tile pane for Zimbabwe-only rendering.
+- Reverted boundary-outline removal (restored prior boundary behavior).
+- Reverting boundary masking and clipping to restore full world map.
+- Removed unused Zimbabwe boundary JS after reverting to full world map.
+- Added embedded secondary schools JS to avoid fetch failures on file://.
+- Switched markers to div icons to improve popup reliability.
+- Increased marker size and enabled cluster spiderfy at max zoom.
+- Added search, province/district filters, and summary panel.
+- Moved filter panel to top-right to avoid covering zoom controls.
+- Moved legend to bottom-right to avoid overlapping the panel.
+- Planned approach for adding primary schools and dual-level visualization (data pipeline + UI layers).
+- Added primary schools GeoJSON/JS outputs and a build script for both levels.
+- Updated map UI and logic to show primary + secondary with toggles, legend, and counts.
+- Updated README to reflect primary + secondary map outputs.
+- Confirmed auto-push to GitHub after each commit.
+- Removed datasets from repo and added .gitignore entries for local data outputs.
+- Updated docs and map loading to rely on locally generated GeoJSON from downloaded source.
+- Restored local dataset from git history and updated build script to handle UTF-16/UTF-8 BOM CSV files.
+- Ignored PROJECT_SPEC.md and removed it from Git tracking.
+- Rewrote README to standard GitHub format with setup, data source, and credits.
+- Re-enabled GeoJSON outputs for GitHub Pages and regenerated data files.
+- Analyzed location_of_schools.csv for data quality to draft a cleaning plan.
+- Implemented data cleaning script and added cleaning steps to README.
+- Updated README dataset source URL and removed .gitignore from Git tracking.
+- Updated README dataset source and Geo-Connect credit link.
+- Replaced index.html with a modern, single-file Leaflet experience featuring improved UI, styling, and interaction.
+- Split embedded styles and script into css/styles.css and js/map.js, and updated index.html links.
+- Moved zoom controls to the left and the explorer panel to the right.
+- Added autocomplete + multi-select filters with a clear button for improved UX.
+- Replaced multi-select list boxes with custom dropdowns featuring checkboxes.
+- Added select-all and clear actions to multiselect dropdowns.
+- Added choropleth data pipeline and a new province-level choropleth map page.
+- Added lat/lon grid density pipeline and grid density map page.
+- Added percentage-based grid density metrics and updated map legend/tooltips.
+- Switched grid density choropleth to a continuous blue-to-yellow gradient with a gradient legend.
+- Expanded grid density output to include empty Zimbabwe grid cells using admin boundary mask.
+- Added requirements.txt with optional geospatial dependency.
+- Removed requirements.txt since no Python dependencies are installed.
+- Added hexbin density pipeline and hex density map page.
+- Updated province choropleth to use percentage shares with continuous gradient.
+- Adjusted choropleth color scaling for better contrast and added min/max check.
+- Removed grid and hex density map pages, scripts, and data.
+- Switched choropleth color scaling to a stronger log curve.
+- Removed choropleth page, scripts, styles, and data files.
+- Added dataset last-updated date to README.
+- Created local research folder for Nyanga District schools and added initial school profiles.
+- Generated Nyanga District school research files with expanded fields from the dataset and added web sources for key schools.
+- Deleted local research folder.
+- Generated schools_primary.csv and schools_secondary.csv from cleaned data.
+- Deleted schools_primary.xlsx and schools_secondary.xlsx after generating CSV exports.
+- Regenerated primary and secondary summary markdown files from cleaned CSV exports.
+- Generated data/schools_missing_coords.csv from clean_schools.csv.
+- Merged updated coordinates from schools_missing_coords.csv into clean_schools.csv and regenerated GeoJSON outputs.
+- Removed rows with newly filled coordinates from schools_missing_coords.csv.
+- Pulled OSM school POIs for Zimbabwe and generated candidate matches for missing coordinates.
+- Removed OSM extract and candidate match files.
+- Drafted visualization plan outline for school geospatial storytelling request.
