@@ -43,8 +43,19 @@ function buildPopup(props) {
   `;
 }
 
-fetch("data/secondary_schools.geojson")
-  .then((response) => response.json())
+function loadSchoolData() {
+  if (window.SECONDARY_SCHOOLS) {
+    return Promise.resolve(window.SECONDARY_SCHOOLS);
+  }
+  return fetch("data/secondary_schools.geojson").then((response) => {
+    if (!response.ok) {
+      throw new Error(`data/secondary_schools.geojson -> ${response.status}`);
+    }
+    return response.json();
+  });
+}
+
+loadSchoolData()
   .then((geojson) => {
     const layer = L.geoJSON(geojson, {
       pointToLayer: (feature, latlng) =>

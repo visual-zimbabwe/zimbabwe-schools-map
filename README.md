@@ -8,6 +8,7 @@ Current focus:
 Key data:
 - `location_of_schools.csv` (source dataset)
 - `data/secondary_schools.geojson` (filtered, map-ready data)
+- `data/secondary_schools.js` (embedded data for file-based loading)
 
 How to run locally:
 - Open `index.html` in a browser or serve a local static server.
