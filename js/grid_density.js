@@ -19,7 +19,14 @@ L.tileLayer(
 let geoLayer = null;
 let currentData = null;
 
-const palette = ["#f5f3ef", "#f7d79b", "#f2c14e", "#e07a5f", "#5f0f40"];
+const gradientStops = [
+  "#0b1b3b", // deep navy
+  "#1f4e8c", // blue
+  "#3fb6c8", // cyan
+  "#43b96b", // green
+  "#f6d74b", // yellow
+  "#f39c34", // orange
+];
 
 function getCounts(feature) {
   const props = feature.properties || {};
@@ -36,17 +43,44 @@ function getPct(feature) {
 }
 
 function getBreaks(values) {
-  if (!values.length) return [0, 1, 2, 3, 4];
+  if (!values.length) return [0, 1];
   const max = Math.max(...values);
-  const step = max / 4;
-  return [0, step, step * 2, step * 3, step * 4];
+  return [0, max];
+}
+
+function hexToRgb(hex) {
+  const value = hex.replace("#", "");
+  const num = parseInt(value, 16);
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255,
+  };
+}
+
+function rgbToHex(r, g, b) {
+  const toHex = (v) => v.toString(16).padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function interpolateColor(a, b, t) {
+  const ar = hexToRgb(a);
+  const br = hexToRgb(b);
+  const r = Math.round(ar.r + (br.r - ar.r) * t);
+  const g = Math.round(ar.g + (br.g - ar.g) * t);
+  const bVal = Math.round(ar.b + (br.b - ar.b) * t);
+  return rgbToHex(r, g, bVal);
 }
 
 function colorFor(value, breaks) {
-  if (value <= breaks[1]) return palette[1];
-  if (value <= breaks[2]) return palette[2];
-  if (value <= breaks[3]) return palette[3];
-  return palette[4];
+  const max = breaks[1] || 1;
+  const t = Math.min(1, Math.max(0, value / max));
+  const scaled = t * (gradientStops.length - 1);
+  const idx = Math.floor(scaled);
+  const localT = scaled - idx;
+  const start = gradientStops[idx];
+  const end = gradientStops[Math.min(idx + 1, gradientStops.length - 1)];
+  return interpolateColor(start, end, localT);
 }
 
 function styleFeature(feature) {
@@ -67,23 +101,20 @@ function buildLegend(breaks) {
   title.textContent = "Share of schools (%)";
   legendEl.appendChild(title);
 
-  const scale = document.createElement("div");
-  scale.className = "legend-scale";
-  for (let i = 0; i < 4; i += 1) {
-    const item = document.createElement("div");
-    item.className = "legend-item";
-    const swatch = document.createElement("div");
-    swatch.className = "legend-swatch";
-    swatch.style.background = palette[i + 1];
-    const label = document.createElement("div");
-    const from = breaks[i];
-    const to = breaks[i + 1];
-    label.textContent = `${from.toFixed(1)} - ${to.toFixed(1)}%`;
-    item.appendChild(swatch);
-    item.appendChild(label);
-    scale.appendChild(item);
-  }
-  legendEl.appendChild(scale);
+  const bar = document.createElement("div");
+  bar.className = "legend-gradient";
+  bar.style.background = `linear-gradient(90deg, ${gradientStops.join(",")})`;
+  legendEl.appendChild(bar);
+
+  const labels = document.createElement("div");
+  labels.className = "legend-labels";
+  const min = document.createElement("span");
+  min.textContent = `${breaks[0].toFixed(1)}%`;
+  const max = document.createElement("span");
+  max.textContent = `${breaks[1].toFixed(1)}%`;
+  labels.appendChild(min);
+  labels.appendChild(max);
+  legendEl.appendChild(labels);
 }
 
 function updateSummary(layer) {

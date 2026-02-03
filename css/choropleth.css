@@ -145,6 +145,21 @@ body {
   gap: 6px;
 }
 
+.legend-gradient {
+  width: 180px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  margin: 6px 0;
+}
+
+.legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #586779;
+}
+
 .legend-item {
   display: flex;
   align-items: center;
