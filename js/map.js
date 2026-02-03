@@ -56,56 +56,6 @@ function extractHoles(geometry) {
   return holes;
 }
 
-function extractBoundaryRings(geometry) {
-  const rings = [];
-  if (geometry.type === "Polygon") {
-    const coords = geometry.coordinates || [];
-    if (coords.length > 0) {
-      rings.push(lngLatToLatLng(coords[0]));
-    }
-  } else if (geometry.type === "MultiPolygon") {
-    const polys = geometry.coordinates || [];
-    polys.forEach((poly) => {
-      if (poly.length > 0) {
-        rings.push(lngLatToLatLng(poly[0]));
-      }
-    });
-  }
-  return rings;
-}
-
-function createClipPath(boundaryFeature) {
-  const svgLayer = L.svg({ pane: "boundaryPane" }).addTo(map);
-  const svg = svgLayer._container;
-  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-  const clip = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
-  clip.setAttribute("id", "zw-clip");
-  clip.setAttribute("clipPathUnits", "userSpaceOnUse");
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  clip.appendChild(path);
-  defs.appendChild(clip);
-  svg.appendChild(defs);
-
-  const rings = extractBoundaryRings(boundaryFeature.geometry);
-
-  function updatePath() {
-    const parts = rings.map((ring) => {
-      const pts = ring.map((latlng) => map.latLngToLayerPoint(latlng));
-      return pts
-        .map((p, i) => `${i === 0 ? "M" : "L"}${p.x} ${p.y}`)
-        .join(" ") + " Z";
-    });
-    path.setAttribute("d", parts.join(" "));
-  }
-
-  updatePath();
-  map.on("zoomend moveend", updatePath);
-
-  const tilePane = map.getPane("tilePane");
-  tilePane.style.clipPath = "url(#zw-clip)";
-  tilePane.style.webkitClipPath = "url(#zw-clip)";
-}
-
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -152,7 +102,6 @@ Promise.allSettled([boundaryPromise, schoolsPromise])
     if (boundaryResult.status === "fulfilled") {
       const boundaryGeo = boundaryResult.value;
       const boundaryFeature = boundaryGeo.features[0];
-      createClipPath(boundaryFeature);
 
       // Mask outside Zimbabwe
       const worldRing = [

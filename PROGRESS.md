@@ -19,3 +19,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Moved mask and boundary to dedicated panes above tiles to prevent flicker.
 - Added SVG clipPath to tile pane for Zimbabwe-only rendering.
 - Reverted boundary-outline removal (restored prior boundary behavior).
+- Reverting boundary masking and clipping to restore full world map.
