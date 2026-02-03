@@ -28,7 +28,7 @@ let secondaryFeatures = [];
 let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
-const HEAT_RADIUS_KM = 10;
+const HEAT_RADIUS_KM = 5;
 
 function primeWindowData() {
   if (window.PRIMARY_SCHOOLS && window.SECONDARY_SCHOOLS) {
