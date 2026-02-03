@@ -28,9 +28,11 @@ let secondaryFeatures = [];
 let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
+let baseFill = null;
 const HEAT_RADIUS_KM = 5;
 const BASE_GRID_STEP_DEG = 0.25;
-const BASE_GRID_WEIGHT = 0.01;
+const BASE_GRID_WEIGHT = 0.02;
+const BASE_FILL_COLOR = "#041527";
 const ZIMBABWE_BOUNDARY_SOURCES = [
   {
     type: "naturalearth",
@@ -161,7 +163,7 @@ function updateHeatLayer() {
     radius: heatRadiusPx(),
     blur: 8,
     maxZoom: 9,
-    minOpacity: 0.4,
+    minOpacity: 0.6,
     max: 0.4,
     gradient: {
       0.0: "#041527",
@@ -171,6 +173,16 @@ function updateHeatLayer() {
       1.0: "#ffd84a",
     },
   };
+  if (!baseFill) {
+    const basePane = map.createPane("baseFillPane");
+    basePane.style.zIndex = 420;
+    baseFill = L.rectangle(ZIM_BOUNDS, {
+      pane: "baseFillPane",
+      stroke: false,
+      fillColor: BASE_FILL_COLOR,
+      fillOpacity: 1,
+    }).addTo(map);
+  }
   if (heatLayer) {
     map.removeLayer(heatLayer);
   }

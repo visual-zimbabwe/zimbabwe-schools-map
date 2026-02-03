@@ -94,3 +94,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added a low-intensity background grid so the heatmap fills from zero.
 - Updated heatmap palette to dark blue (low) and bright yellow (high).
 - Anchored zero density to dark blue and strongest density to bright yellow.
+- Added a dark-blue base fill layer so zero-density areas never appear white.
