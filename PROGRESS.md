@@ -25,3 +25,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Switched markers to div icons to improve popup reliability.
 - Increased marker size and enabled cluster spiderfy at max zoom.
 - Added search, province/district filters, and summary panel.
+- Moved filter panel to top-right to avoid covering zoom controls.
