@@ -26,3 +26,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Increased marker size and enabled cluster spiderfy at max zoom.
 - Added search, province/district filters, and summary panel.
 - Moved filter panel to top-right to avoid covering zoom controls.
+- Moved legend to bottom-right to avoid overlapping the panel.

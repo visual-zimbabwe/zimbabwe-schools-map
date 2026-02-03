@@ -18,7 +18,7 @@ body {
 
 .legend {
   position: absolute;
-  top: 16px;
+  bottom: 16px;
   right: 16px;
   z-index: 1000;
   background: rgba(255, 255, 255, 0.95);
