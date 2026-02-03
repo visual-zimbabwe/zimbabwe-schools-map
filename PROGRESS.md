@@ -102,3 +102,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Removed the heatmap web page files, leaving the final static PNG as the deliverable.
 - Deleted the reference image file.
 - Deleted heatmap.png and removed its related artifacts.
+- Improved mobile layout so the map keeps at least half the viewport height and the filter panel scrolls.
