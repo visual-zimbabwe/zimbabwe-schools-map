@@ -6,8 +6,8 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added initial repository README.
 - Established progress logging rule.
 - Added AGENTS note to always update PROGRESS.md on changes.
-- Initialized git repository.
 - Added AGENTS note to always commit changes without asking for permission.
+- Initialized git repository.
 - Added detailed project specification for the Map of Secondary Schools MVP.
 - Built Web v1.0 map: added static app files, styles, and Leaflet clustering.
 - Generated `data/secondary_schools.geojson` from `location_of_schools.csv`.
@@ -27,3 +27,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added search, province/district filters, and summary panel.
 - Moved filter panel to top-right to avoid covering zoom controls.
 - Moved legend to bottom-right to avoid overlapping the panel.
+- Planned approach for adding primary schools and dual-level visualization (data pipeline + UI layers).
