@@ -104,6 +104,7 @@ body {
   height: 100%;
   width: 100%;
   min-height: 420px;
+  background: #000000;
 }
 
 .map-legend {
@@ -126,7 +127,7 @@ body {
 .legend-bar {
   height: 10px;
   border-radius: 6px;
-  background: linear-gradient(90deg, #041527 0%, #0b355d 40%, #155a8a 70%, #ffd84a 100%);
+  background: linear-gradient(90deg, #0b1a3a 0%, #2b2f70 40%, #2db27d 70%, #ffe066 100%);
 }
 
 .legend-scale {

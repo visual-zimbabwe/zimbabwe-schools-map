@@ -3,16 +3,16 @@
   [-15.3, 33.2],
 ];
 
-const map = L.map("map", { zoomControl: false, maxZoom: 10, minZoom: 6 }).fitBounds(
-  ZIM_BOUNDS
-);
+const map = L.map("map", {
+  zoomControl: false,
+  maxZoom: 10,
+  minZoom: 6,
+  preferCanvas: true,
+}).fitBounds(ZIM_BOUNDS);
 L.control.zoom({ position: "topleft" }).addTo(map);
 L.control.scale({ position: "bottomleft", imperial: false }).addTo(map);
 
-L.tileLayer(
-  "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
-  { attribution: "&copy; OpenStreetMap contributors &copy; CARTO" }
-).addTo(map);
+// Intentionally no basemap tiles to match the dark, data-first aesthetic.
 
 const loading = document.getElementById("loading");
 const totalCountEl = document.getElementById("totalCount");
@@ -32,7 +32,7 @@ let baseFill = null;
 const HEAT_RADIUS_KM = 5;
 const BASE_GRID_STEP_DEG = 0.25;
 const BASE_GRID_WEIGHT = 0.02;
-const BASE_FILL_COLOR = "#041527";
+const BASE_FILL_COLOR = "#06162a";
 const ZIMBABWE_BOUNDARY_SOURCES = [
   {
     type: "naturalearth",
@@ -166,11 +166,11 @@ function updateHeatLayer() {
     minOpacity: 0.6,
     max: 0.25,
     gradient: {
-      0.0: "#041527",
-      0.4: "#0b355d",
-      0.7: "#155a8a",
+      0.0: "#0b1a3a",
+      0.35: "#2b2f70",
+      0.6: "#2db27d",
       0.85: "#f2c84b",
-      1.0: "#ffd84a",
+      1.0: "#ffe066",
     },
   };
   if (!baseFill) {
