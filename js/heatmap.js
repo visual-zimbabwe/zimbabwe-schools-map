@@ -29,6 +29,15 @@ let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
 
+function primeWindowData() {
+  if (window.PRIMARY_SCHOOLS && window.SECONDARY_SCHOOLS) {
+    primaryFeatures = window.PRIMARY_SCHOOLS.features || [];
+    secondaryFeatures = window.SECONDARY_SCHOOLS.features || [];
+    return true;
+  }
+  return false;
+}
+
 function normalize(value) {
   return String(value || "").trim();
 }
@@ -178,8 +187,13 @@ Promise.all([
   loadGeoJSON("data/secondary_schools.geojson", window.SECONDARY_SCHOOLS),
 ])
   .then(([primary, secondary]) => {
-    primaryFeatures = primary.features || [];
-    secondaryFeatures = secondary.features || [];
+    primaryFeatures = (primary && primary.features) || primaryFeatures;
+    secondaryFeatures = (secondary && secondary.features) || secondaryFeatures;
+    if (!primaryFeatures.length && !secondaryFeatures.length) {
+      loading.textContent =
+        "No school data loaded. Use a local server or verify data files.";
+      return;
+    }
     map.whenReady(() => {
       map.invalidateSize();
       scheduleHeatLayer();
@@ -190,6 +204,14 @@ Promise.all([
     loading.textContent = "Failed to load school data.";
     console.error(err);
   });
+
+if (isFileProtocol && primeWindowData()) {
+  map.whenReady(() => {
+    map.invalidateSize();
+    scheduleHeatLayer();
+  });
+  loading.style.display = "none";
+}
 
 togglePrimary.addEventListener("click", () => {
   togglePrimary.classList.toggle("active");

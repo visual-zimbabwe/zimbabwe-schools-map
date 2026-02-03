@@ -81,3 +81,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added GeoJSON fallback loading for heatmap page using embedded JS data for file:// usage.
 - Fixed heatmap loading on file:// by preferring embedded data and guarding empty heat layers.
 - Added size-aware heatmap initialization to avoid zero-height canvas errors.
+- Added explicit window-data initialization and empty-data messaging for heatmap.
