@@ -27,6 +27,7 @@ let primaryFeatures = [];
 let secondaryFeatures = [];
 let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
+let heatReady = false;
 
 function normalize(value) {
   return String(value || "").trim();
@@ -119,6 +120,10 @@ function updateHeatLayer() {
     updateRanks();
     return;
   }
+  const size = map.getSize();
+  if (!size || size.y === 0 || size.x === 0) {
+    return;
+  }
   if (heatLayer) {
     heatLayer.setLatLngs(points);
   } else {
@@ -137,6 +142,20 @@ function updateHeatLayer() {
   }
   updateStats();
   updateRanks();
+}
+
+function scheduleHeatLayer() {
+  if (heatReady) return;
+  heatReady = true;
+  const attempt = () => {
+    const size = map.getSize();
+    if (!size || size.y === 0 || size.x === 0) {
+      setTimeout(attempt, 60);
+      return;
+    }
+    updateHeatLayer();
+  };
+  requestAnimationFrame(attempt);
 }
 
 function loadGeoJSON(url, fallback) {
@@ -161,8 +180,10 @@ Promise.all([
   .then(([primary, secondary]) => {
     primaryFeatures = primary.features || [];
     secondaryFeatures = secondary.features || [];
-    map.invalidateSize();
-    updateHeatLayer();
+    map.whenReady(() => {
+      map.invalidateSize();
+      scheduleHeatLayer();
+    });
     loading.style.display = "none";
   })
   .catch((err) => {
