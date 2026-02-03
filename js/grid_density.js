@@ -28,10 +28,17 @@ function getCounts(feature) {
   return props.total_count || 0;
 }
 
+function getPct(feature) {
+  const props = feature.properties || {};
+  if (levelSelect.value === "primary") return props.primary_pct || 0;
+  if (levelSelect.value === "secondary") return props.secondary_pct || 0;
+  return props.total_pct || 0;
+}
+
 function getBreaks(values) {
   if (!values.length) return [0, 1, 2, 3, 4];
   const max = Math.max(...values);
-  const step = Math.max(1, Math.ceil(max / 4));
+  const step = max / 4;
   return [0, step, step * 2, step * 3, step * 4];
 }
 
@@ -57,7 +64,7 @@ function styleFeature(feature) {
 function buildLegend(breaks) {
   legendEl.innerHTML = "";
   const title = document.createElement("h3");
-  title.textContent = "Schools per grid cell";
+  title.textContent = "Share of schools (%)";
   legendEl.appendChild(title);
 
   const scale = document.createElement("div");
@@ -69,9 +76,9 @@ function buildLegend(breaks) {
     swatch.className = "legend-swatch";
     swatch.style.background = palette[i + 1];
     const label = document.createElement("div");
-    const from = breaks[i] + 1;
+    const from = breaks[i];
     const to = breaks[i + 1];
-    label.textContent = `${from} - ${to}`;
+    label.textContent = `${from.toFixed(1)} - ${to.toFixed(1)}%`;
     item.appendChild(swatch);
     item.appendChild(label);
     scale.appendChild(item);
@@ -97,7 +104,7 @@ function renderLayer(geojson) {
   if (geoLayer) {
     geoLayer.remove();
   }
-  const values = geojson.features.map((feature) => getCounts(feature));
+  const values = geojson.features.map((feature) => getPct(feature));
   const breaks = getBreaks(values);
   currentData = { breaks };
   buildLegend(breaks);
@@ -109,8 +116,9 @@ function renderLayer(geojson) {
       const total = props.total_count || 0;
       const primary = props.primary_count || 0;
       const secondary = props.secondary_count || 0;
+      const pct = getPct(feature).toFixed(2);
       layer.bindTooltip(
-        `<strong>Grid cell</strong><br/>Total: ${total}<br/>Primary: ${primary}<br/>Secondary: ${secondary}`,
+        `<strong>Grid cell</strong><br/>Share: ${pct}%<br/>Total: ${total}<br/>Primary: ${primary}<br/>Secondary: ${secondary}`,
         { className: "custom-tooltip", sticky: true }
       );
       layer.on({

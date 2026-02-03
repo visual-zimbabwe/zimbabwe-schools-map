@@ -66,6 +66,9 @@ def main():
             add_point(lat, lon, "secondary")
 
     features = []
+    total_primary = sum(counts["primary"] for counts in grid.values())
+    total_secondary = sum(counts["secondary"] for counts in grid.values())
+    total_all = total_primary + total_secondary
     for (lat_idx, lon_idx), counts in grid.items():
         lat_min, lat_max, lon_min, lon_max = cell_bounds(lat_idx, lon_idx)
         total = counts["primary"] + counts["secondary"]
@@ -91,6 +94,17 @@ def main():
                     "primary_count": counts["primary"],
                     "secondary_count": counts["secondary"],
                     "total_count": total,
+                    "primary_pct": (
+                        (counts["primary"] / total_primary * 100)
+                        if total_primary
+                        else 0
+                    ),
+                    "secondary_pct": (
+                        (counts["secondary"] / total_secondary * 100)
+                        if total_secondary
+                        else 0
+                    ),
+                    "total_pct": (total / total_all * 100) if total_all else 0,
                 },
             }
         )
