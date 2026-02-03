@@ -92,3 +92,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Switched to a higher-resolution Natural Earth boundary with geoBoundaries and SimpleMaps fallbacks.
 - Removed basemap labels for a cleaner heatmap.
 - Added a low-intensity background grid so the heatmap fills from zero.
+- Updated heatmap palette to dark blue (low) and bright yellow (high).
