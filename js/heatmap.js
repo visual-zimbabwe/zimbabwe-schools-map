@@ -26,6 +26,7 @@ const bottomZones = document.getElementById("bottomZones");
 let primaryFeatures = [];
 let secondaryFeatures = [];
 let heatLayer = null;
+const isFileProtocol = window.location.protocol === "file:";
 
 function normalize(value) {
   return String(value || "").trim();
@@ -109,6 +110,15 @@ function updateRanks() {
 
 function updateHeatLayer() {
   const points = buildHeatPoints();
+  if (!points.length) {
+    if (heatLayer) {
+      map.removeLayer(heatLayer);
+      heatLayer = null;
+    }
+    updateStats();
+    updateRanks();
+    return;
+  }
   if (heatLayer) {
     heatLayer.setLatLngs(points);
   } else {
@@ -130,6 +140,9 @@ function updateHeatLayer() {
 }
 
 function loadGeoJSON(url, fallback) {
+  if (isFileProtocol && fallback) {
+    return Promise.resolve(fallback);
+  }
   return fetch(url)
     .then((response) => {
       if (!response.ok) throw new Error(`${url} -> ${response.status}`);
@@ -148,6 +161,7 @@ Promise.all([
   .then(([primary, secondary]) => {
     primaryFeatures = primary.features || [];
     secondaryFeatures = secondary.features || [];
+    map.invalidateSize();
     updateHeatLayer();
     loading.style.display = "none";
   })

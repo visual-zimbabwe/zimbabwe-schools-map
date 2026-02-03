@@ -79,3 +79,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added heatmap styling, density legend, and province hotspot/coldspot rankings.
 - Updated README with heatmap page entry.
 - Added GeoJSON fallback loading for heatmap page using embedded JS data for file:// usage.
+- Fixed heatmap loading on file:// by preferring embedded data and guarding empty heat layers.
