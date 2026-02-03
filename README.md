@@ -14,7 +14,7 @@ Minimal, static web map of Zimbabwe's primary and secondary schools using Leafle
 The source dataset is not stored in this repository. Download it from Geo-Connect (MoPSE) and save it as `location_of_schools.csv` in the repo root.
 
 Dataset source:
-- `https://data.geo-connect.org/datasets/schools-in-zimbabwe/`
+- `https://geo-connect.org`
 
 ## Clean the source data (recommended)
 ```
