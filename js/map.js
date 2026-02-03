@@ -1,14 +1,21 @@
 /* global L */
 const ZIMBABWE_CENTER = [-19.0154, 29.1549];
 const INITIAL_ZOOM = 6;
+const ZIMBABWE_BOUNDS = [
+  [-22.45, 25.24], // southwest
+  [-15.6, 33.05], // northeast
+];
 
 const map = L.map("map", {
   zoomControl: true,
   attributionControl: true,
+  maxBounds: ZIMBABWE_BOUNDS,
+  maxBoundsViscosity: 1.0,
 }).setView(ZIMBABWE_CENTER, INITIAL_ZOOM);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 18,
+  minZoom: 6,
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);

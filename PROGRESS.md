@@ -12,3 +12,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Built Web v1.0 map: added static app files, styles, and Leaflet clustering.
 - Generated `data/secondary_schools.geojson` from `location_of_schools.csv`.
 - Removed CDN integrity attributes to avoid Leaflet/cluster assets blocking.
+- Constrained map bounds and zoom to Zimbabwe extent.
