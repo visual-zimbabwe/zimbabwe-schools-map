@@ -206,6 +206,8 @@ Promise.all([
   });
 
 if (isFileProtocol && primeWindowData()) {
+  updateStats();
+  updateRanks();
   map.whenReady(() => {
     map.invalidateSize();
     scheduleHeatLayer();
