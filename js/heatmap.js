@@ -129,16 +129,21 @@ function updateHeatLayer() {
   updateRanks();
 }
 
-function loadGeoJSON(url) {
-  return fetch(url).then((response) => {
-    if (!response.ok) throw new Error(`${url} -> ${response.status}`);
-    return response.json();
-  });
+function loadGeoJSON(url, fallback) {
+  return fetch(url)
+    .then((response) => {
+      if (!response.ok) throw new Error(`${url} -> ${response.status}`);
+      return response.json();
+    })
+    .catch((err) => {
+      if (fallback) return fallback;
+      throw err;
+    });
 }
 
 Promise.all([
-  loadGeoJSON("data/primary_schools.geojson"),
-  loadGeoJSON("data/secondary_schools.geojson"),
+  loadGeoJSON("data/primary_schools.geojson", window.PRIMARY_SCHOOLS),
+  loadGeoJSON("data/secondary_schools.geojson", window.SECONDARY_SCHOOLS),
 ])
   .then(([primary, secondary]) => {
     primaryFeatures = primary.features || [];

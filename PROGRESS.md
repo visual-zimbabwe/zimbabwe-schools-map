@@ -78,3 +78,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Implemented the National Accessibility Heatmap page with Leaflet heat layer.
 - Added heatmap styling, density legend, and province hotspot/coldspot rankings.
 - Updated README with heatmap page entry.
+- Added GeoJSON fallback loading for heatmap page using embedded JS data for file:// usage.
