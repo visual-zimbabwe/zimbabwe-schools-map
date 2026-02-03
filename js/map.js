@@ -94,31 +94,69 @@ function makeMarker(feature, isPrimary) {
   return marker;
 }
 
-function setOptions(select, values, placeholder) {
-  const currentValues = getSelectedValues(select);
-  select.innerHTML = "";
-  const opt = document.createElement("option");
-  opt.value = "";
-  opt.textContent = placeholder;
-  select.appendChild(opt);
-  values.forEach((value) => {
-    const item = document.createElement("option");
-    item.value = value;
-    item.textContent = value;
-    select.appendChild(item);
-  });
-  currentValues.forEach((value) => {
-    const option = [...select.options].find((o) => o.value === value);
-    if (option) {
-      option.selected = true;
-    }
-  });
+function getSelectedValues(container) {
+  return [...container.querySelectorAll("input[type='checkbox']:checked")].map(
+    (input) => input.value
+  );
 }
 
-function getSelectedValues(select) {
-  return [...select.selectedOptions]
-    .map((option) => option.value)
-    .filter((value) => value);
+function setMultiSelectOptions(container, values, placeholder) {
+  const currentValues = new Set(getSelectedValues(container));
+  const trigger = container.querySelector(".multi-trigger");
+  const menu = container.querySelector(".multi-menu");
+  menu.innerHTML = "";
+
+  values.forEach((value) => {
+    const option = document.createElement("label");
+    option.className = "multi-option";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = value;
+    checkbox.checked = currentValues.has(value);
+    const text = document.createElement("span");
+    text.textContent = value;
+    option.appendChild(checkbox);
+    option.appendChild(text);
+    menu.appendChild(option);
+  });
+
+  updateMultiSelectLabel(container, placeholder);
+}
+
+function updateMultiSelectLabel(container, placeholder) {
+  const trigger = container.querySelector(".multi-trigger");
+  const values = getSelectedValues(container);
+  if (!values.length) {
+    trigger.firstChild.textContent = placeholder;
+    return;
+  }
+  const label =
+    values.length === 1
+      ? values[0]
+      : `${values.length} selected`;
+  trigger.firstChild.textContent = label;
+}
+
+function setupMultiSelect(container, placeholder, onChange) {
+  const trigger = container.querySelector(".multi-trigger");
+  trigger.firstChild.textContent = placeholder;
+
+  trigger.addEventListener("click", () => {
+    container.classList.toggle("open");
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!container.contains(event.target)) {
+      container.classList.remove("open");
+    }
+  });
+
+  container.addEventListener("change", (event) => {
+    if (event.target.matches("input[type='checkbox']")) {
+      updateMultiSelectLabel(container, placeholder);
+      onChange();
+    }
+  });
 }
 
 function activeLevels() {
@@ -170,7 +208,7 @@ function refreshDistrictOptions() {
     .map((f) => f.properties.District)
     .filter(Boolean);
   const unique = [...new Set(districts)].sort();
-  setOptions(districtSelect, unique, "All districts");
+  setMultiSelectOptions(districtSelect, unique, "All districts");
 }
 
 function updateCounts(filteredPrimary, filteredSecondary) {
@@ -254,7 +292,12 @@ Promise.all([
           .filter(Boolean)
       ),
     ].sort();
-    setOptions(provinceSelect, provinces, "All provinces");
+    setupMultiSelect(provinceSelect, "All provinces", () => {
+      refreshDistrictOptions();
+      applyFilters();
+    });
+    setupMultiSelect(districtSelect, "All districts", applyFilters);
+    setMultiSelectOptions(provinceSelect, provinces, "All provinces");
     refreshDistrictOptions();
     applyFilters();
     loading.style.display = "none";
@@ -265,12 +308,6 @@ Promise.all([
   });
 
 searchInput.addEventListener("input", applyFilters);
-provinceSelect.addEventListener("change", () => {
-  refreshDistrictOptions();
-  applyFilters();
-});
-districtSelect.addEventListener("change", applyFilters);
-
 togglePrimary.addEventListener("click", () => {
   togglePrimary.classList.toggle("active");
   refreshDistrictOptions();
@@ -284,8 +321,14 @@ toggleSecondary.addEventListener("click", () => {
 
 clearFilters.addEventListener("click", () => {
   searchInput.value = "";
-  [...provinceSelect.options].forEach((opt) => (opt.selected = false));
-  [...districtSelect.options].forEach((opt) => (opt.selected = false));
+  provinceSelect
+    .querySelectorAll("input[type='checkbox']")
+    .forEach((input) => (input.checked = false));
+  districtSelect
+    .querySelectorAll("input[type='checkbox']")
+    .forEach((input) => (input.checked = false));
+  updateMultiSelectLabel(provinceSelect, "All provinces");
+  updateMultiSelectLabel(districtSelect, "All districts");
   togglePrimary.classList.add("active");
   toggleSecondary.classList.add("active");
   refreshDistrictOptions();

@@ -46,13 +46,25 @@
           <datalist id="schoolNames"></datalist>
         </div>
         <div class="field">
-          <label for="provinceSelect">Province</label>
-          <select id="provinceSelect" multiple></select>
+          <label>Province</label>
+          <div class="multi-select" id="provinceSelect">
+            <button class="multi-trigger" type="button">
+              All provinces
+              <span class="multi-caret">▾</span>
+            </button>
+            <div class="multi-menu"></div>
+          </div>
           <div class="field-hint">Tip: select multiple provinces.</div>
         </div>
         <div class="field">
-          <label for="districtSelect">District</label>
-          <select id="districtSelect" multiple></select>
+          <label>District</label>
+          <div class="multi-select" id="districtSelect">
+            <button class="multi-trigger" type="button">
+              All districts
+              <span class="multi-caret">▾</span>
+            </button>
+            <div class="multi-menu"></div>
+          </div>
           <div class="field-hint">Tip: select multiple districts.</div>
         </div>
         <div class="field">
