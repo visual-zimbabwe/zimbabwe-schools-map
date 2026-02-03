@@ -101,3 +101,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Moved boundary mask above the heat layer and forced SVG rendering to clip the square.
 - Removed the heatmap web page files, leaving the final static PNG as the deliverable.
 - Deleted the reference image file.
+- Deleted heatmap.png and removed its related artifacts.
