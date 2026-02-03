@@ -1,51 +1,66 @@
-/* global L */
-const ZIMBABWE_CENTER = [-19.0154, 29.1549];
-const INITIAL_ZOOM = 6;
+const ZIM_BOUNDS = [
+  [-22.5, 25.2],
+  [-15.3, 33.2],
+];
 
-const map = L.map("map", {
-  zoomControl: true,
-  attributionControl: true,
-}).setView(ZIMBABWE_CENTER, INITIAL_ZOOM);
+const map = L.map("map", { zoomControl: false }).fitBounds(ZIM_BOUNDS);
+L.control.zoom({ position: "topright" }).addTo(map);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 18,
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-}).addTo(map);
+const baseLayers = {
+  "Clean Light": L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    { attribution: "&copy; OpenStreetMap contributors &copy; CARTO" }
+  ),
+  Terrain: L.tileLayer(
+    "https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg",
+    { attribution: "&copy; OpenStreetMap contributors &copy; Stamen" }
+  ),
+};
+baseLayers["Clean Light"].addTo(map);
+L.control.layers(baseLayers, null, { position: "bottomright" }).addTo(map);
 
 const clusterOptions = {
   showCoverageOnHover: false,
-  zoomToBoundsOnClick: true,
+  maxClusterRadius: 48,
   spiderfyOnMaxZoom: true,
-  spiderfyDistanceMultiplier: 1.2,
-  maxClusterRadius: 50,
+  iconCreateFunction: (cluster) => {
+    const count = cluster.getChildCount();
+    const size = count < 50 ? 36 : count < 200 ? 44 : 52;
+    return L.divIcon({
+      html: `<div style="
+        width:${size}px;height:${size}px;border-radius:50%;
+        display:flex;align-items:center;justify-content:center;
+        background:radial-gradient(circle at 30% 30%, rgba(244,196,48,0.9), rgba(17,17,17,0.9));
+        color:white;font-weight:700;font-size:12px;box-shadow:0 8px 18px rgba(0,0,0,0.2)
+      ">${count}</div>`,
+      className: "",
+      iconSize: [size, size],
+    });
+  },
 };
 
 const primaryCluster = L.markerClusterGroup(clusterOptions);
 const secondaryCluster = L.markerClusterGroup(clusterOptions);
-
-const primaryIcon = L.divIcon({
-  className: "school-marker school-marker--primary",
-  iconSize: [12, 12],
-  iconAnchor: [6, 6],
-});
-
-const secondaryIcon = L.divIcon({
-  className: "school-marker school-marker--secondary",
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-});
 
 const searchInput = document.getElementById("searchInput");
 const provinceSelect = document.getElementById("provinceSelect");
 const districtSelect = document.getElementById("districtSelect");
 const filteredCountEl = document.getElementById("filteredCount");
 const inViewCountEl = document.getElementById("inViewCount");
-const topProvincesEl = document.getElementById("topProvinces");
 const primaryCountEl = document.getElementById("primaryCount");
 const secondaryCountEl = document.getElementById("secondaryCount");
-const primaryToggle = document.getElementById("primaryToggle");
-const secondaryToggle = document.getElementById("secondaryToggle");
+const storyText = document.getElementById("storyText");
+const loading = document.getElementById("loading");
+const togglePrimary = document.getElementById("togglePrimary");
+const toggleSecondary = document.getElementById("toggleSecondary");
+
+let primaryFeatures = [];
+let secondaryFeatures = [];
+let currentFiltered = [];
+
+function normalize(value) {
+  return String(value || "").trim().toLowerCase();
+}
 
 function escapeHtml(value) {
   return String(value || "")
@@ -57,285 +72,206 @@ function escapeHtml(value) {
 }
 
 function buildPopup(props) {
-  const name = escapeHtml(props.Name);
-  const district = escapeHtml(props.District);
-  const province = escapeHtml(props.Province);
-  const level = escapeHtml(props.SchoolLevel);
   return `
-    <div class="popup">
-      <div class="popup-title">${name}</div>
-      <div class="popup-row"><strong>District:</strong> ${district}</div>
-      <div class="popup-row"><strong>Province:</strong> ${province}</div>
-      <div class="popup-row"><strong>Level:</strong> ${level}</div>
-    </div>
+    <div class="popup-title">${escapeHtml(props.Name)}</div>
+    <div class="popup-row"><strong>Level:</strong> ${escapeHtml(props.SchoolLevel)}</div>
+    <div class="popup-row"><strong>Province:</strong> ${escapeHtml(props.Province)}</div>
+    <div class="popup-row"><strong>District:</strong> ${escapeHtml(props.District)}</div>
   `;
 }
 
-function normalizeText(value) {
-  return String(value || "").trim().toLowerCase();
+function makeMarker(feature, isPrimary) {
+  const icon = L.divIcon({
+    className: `school-marker ${isPrimary ? "marker-primary" : "marker-secondary"}`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+  });
+  const [lon, lat] = feature.geometry.coordinates;
+  const marker = L.marker([lat, lon], { icon });
+  marker.bindPopup(buildPopup(feature.properties));
+  return marker;
 }
 
 function setOptions(select, values, placeholder) {
   const current = select.value;
   select.innerHTML = "";
-  const defaultOpt = document.createElement("option");
-  defaultOpt.value = "";
-  defaultOpt.textContent = placeholder;
-  select.appendChild(defaultOpt);
-  values.forEach((v) => {
-    const opt = document.createElement("option");
-    opt.value = v;
-    opt.textContent = v;
-    select.appendChild(opt);
+  const opt = document.createElement("option");
+  opt.value = "";
+  opt.textContent = placeholder;
+  select.appendChild(opt);
+  values.forEach((value) => {
+    const item = document.createElement("option");
+    item.value = value;
+    item.textContent = value;
+    select.appendChild(item);
   });
   if ([...select.options].some((o) => o.value === current)) {
     select.value = current;
   }
 }
 
-function countBy(list, keyFn) {
-  const counts = new Map();
-  list.forEach((item) => {
-    const key = keyFn(item) || "Unknown";
-    counts.set(key, (counts.get(key) || 0) + 1);
-  });
-  return counts;
-}
-
-let primaryFeatures = [];
-let secondaryFeatures = [];
-let allFeatures = [];
-let currentFiltered = [];
-
-function buildLayer(features, icon) {
-  return L.geoJSON(
-    {
-      type: "FeatureCollection",
-      features,
-    },
-    {
-      pointToLayer: (feature, latlng) =>
-        L.marker(latlng, {
-          icon,
-          keyboard: false,
-          riseOnHover: true,
-        }),
-      onEachFeature: (feature, layer) => {
-        layer.bindPopup(buildPopup(feature.properties));
-      },
-    }
-  );
-}
-
-function getActiveLevels() {
+function activeLevels() {
   return {
-    primary: primaryToggle.checked,
-    secondary: secondaryToggle.checked,
+    primary: togglePrimary.classList.contains("active"),
+    secondary: toggleSecondary.classList.contains("active"),
   };
 }
 
-function getActiveFeatures() {
-  const levels = getActiveLevels();
-  const features = [];
-  if (levels.primary) {
-    features.push(...primaryFeatures);
-  }
-  if (levels.secondary) {
-    features.push(...secondaryFeatures);
-  }
-  return features;
-}
-
-function updateSummary(filteredFeatures) {
-  filteredCountEl.textContent = filteredFeatures.length.toLocaleString();
-
-  const primaryCount = filteredFeatures.filter(
-    (f) => f.properties.SchoolLevel === "Primary"
-  ).length;
-  const secondaryCount = filteredFeatures.filter(
-    (f) => f.properties.SchoolLevel === "Secondary"
-  ).length;
-  primaryCountEl.textContent = primaryCount.toLocaleString();
-  secondaryCountEl.textContent = secondaryCount.toLocaleString();
-
-  const bounds = map.getBounds();
-  const inView = filteredFeatures.filter((f) => {
-    const [lng, lat] = f.geometry.coordinates;
-    return bounds.contains([lat, lng]);
-  });
-  inViewCountEl.textContent = inView.length.toLocaleString();
-
-  const provinceCounts = [...countBy(filteredFeatures, (f) => f.properties.Province)]
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
-
-  topProvincesEl.innerHTML = "";
-  provinceCounts.forEach((p) => {
-    const li = document.createElement("li");
-    li.textContent = `${p.name} - ${p.count}`;
-    topProvincesEl.appendChild(li);
+function filterFeatures(features, query, province, district) {
+  return features.filter((feature) => {
+    const props = feature.properties || {};
+    const name = normalize(props.Name);
+    if (query && !name.includes(query)) return false;
+    if (province && props.Province !== province) return false;
+    if (district && props.District !== district) return false;
+    return true;
   });
 }
 
-function applyFilters() {
-  const { primary, secondary } = getActiveLevels();
-  const q = normalizeText(searchInput.value);
-  const province = provinceSelect.value;
-  const district = districtSelect.value;
-
-  if (!primary && !secondary) {
-    primaryCluster.clearLayers();
-    secondaryCluster.clearLayers();
-    currentFiltered = [];
-    updateSummary([]);
-    return;
+function updateStory() {
+  const { primary, secondary } = activeLevels();
+  if (primary && secondary) {
+    storyText.textContent =
+      "Both levels are visible. Compare access and density across provinces.";
+  } else if (primary) {
+    storyText.textContent =
+      "Primary schools shape early learning access. Zoom in for community detail.";
+  } else if (secondary) {
+    storyText.textContent =
+      "Secondary schools show pathways to advanced learning. Explore clusters.";
+  } else {
+    storyText.textContent =
+      "Select a level to start exploring schools across Zimbabwe.";
   }
-
-  const filteredPrimary = primary
-    ? primaryFeatures.filter((f) => {
-        const name = normalizeText(f.properties.Name);
-        if (q && !name.includes(q)) {
-          return false;
-        }
-        if (province && f.properties.Province !== province) {
-          return false;
-        }
-        if (district && f.properties.District !== district) {
-          return false;
-        }
-        return true;
-      })
-    : [];
-
-  const filteredSecondary = secondary
-    ? secondaryFeatures.filter((f) => {
-        const name = normalizeText(f.properties.Name);
-        if (q && !name.includes(q)) {
-          return false;
-        }
-        if (province && f.properties.Province !== province) {
-          return false;
-        }
-        if (district && f.properties.District !== district) {
-          return false;
-        }
-        return true;
-      })
-    : [];
-
-  primaryCluster.clearLayers();
-  secondaryCluster.clearLayers();
-
-  if (filteredPrimary.length) {
-    primaryCluster.addLayer(buildLayer(filteredPrimary, primaryIcon));
-  }
-  if (filteredSecondary.length) {
-    secondaryCluster.addLayer(buildLayer(filteredSecondary, secondaryIcon));
-  }
-
-  currentFiltered = [...filteredPrimary, ...filteredSecondary];
-  updateSummary(currentFiltered);
 }
 
 function refreshDistrictOptions() {
   const province = provinceSelect.value;
-  const districtFeatures = getActiveFeatures().filter((f) => {
-    if (province && f.properties.Province !== province) {
-      return false;
-    }
-    return true;
-  });
-  const districts = districtFeatures
+  const levels = activeLevels();
+  const all = [
+    ...(levels.primary ? primaryFeatures : []),
+    ...(levels.secondary ? secondaryFeatures : []),
+  ];
+  const districts = all
+    .filter((f) => !province || f.properties.Province === province)
     .map((f) => f.properties.District)
     .filter(Boolean);
   const unique = [...new Set(districts)].sort();
   setOptions(districtSelect, unique, "All districts");
 }
 
-function loadGeoJson(url) {
+function updateCounts(filteredPrimary, filteredSecondary) {
+  const combined = [...filteredPrimary, ...filteredSecondary];
+  currentFiltered = combined;
+  filteredCountEl.textContent = combined.length.toLocaleString();
+  primaryCountEl.textContent = filteredPrimary.length.toLocaleString();
+  secondaryCountEl.textContent = filteredSecondary.length.toLocaleString();
+
+  const bounds = map.getBounds();
+  const inView = combined.filter((f) => {
+    const [lon, lat] = f.geometry.coordinates;
+    return bounds.contains([lat, lon]);
+  });
+  inViewCountEl.textContent = inView.length.toLocaleString();
+}
+
+function applyFilters() {
+  const { primary, secondary } = activeLevels();
+  const query = normalize(searchInput.value);
+  const province = provinceSelect.value;
+  const district = districtSelect.value;
+
+  primaryCluster.clearLayers();
+  secondaryCluster.clearLayers();
+
+  const filteredPrimary = primary
+    ? filterFeatures(primaryFeatures, query, province, district)
+    : [];
+  const filteredSecondary = secondary
+    ? filterFeatures(secondaryFeatures, query, province, district)
+    : [];
+
+  filteredPrimary.forEach((feature) =>
+    primaryCluster.addLayer(makeMarker(feature, true))
+  );
+  filteredSecondary.forEach((feature) =>
+    secondaryCluster.addLayer(makeMarker(feature, false))
+  );
+
+  updateCounts(filteredPrimary, filteredSecondary);
+  updateStory();
+}
+
+function loadGeoJSON(url) {
   return fetch(url).then((response) => {
-    if (!response.ok) {
-      throw new Error(`${url} -> ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`${url} -> ${response.status}`);
     return response.json();
   });
 }
 
-function fitToVisible() {
-  const bounds = L.latLngBounds([]);
-  if (primaryCluster.getLayers().length) {
-    bounds.extend(primaryCluster.getBounds());
-  }
-  if (secondaryCluster.getLayers().length) {
-    bounds.extend(secondaryCluster.getBounds());
-  }
-  if (bounds.isValid()) {
-    map.fitBounds(bounds, { padding: [20, 20] });
-  }
-}
-
 Promise.all([
-  loadGeoJson("data/primary_schools.geojson"),
-  loadGeoJson("data/secondary_schools.geojson"),
+  loadGeoJSON("data/primary_schools.geojson"),
+  loadGeoJSON("data/secondary_schools.geojson"),
 ])
-  .then(([primaryData, secondaryData]) => {
-    primaryFeatures = primaryData.features || [];
-    secondaryFeatures = secondaryData.features || [];
-    allFeatures = [...primaryFeatures, ...secondaryFeatures];
-
-    const provinces = [
-      ...new Set(allFeatures.map((f) => f.properties.Province).filter(Boolean)),
-    ].sort();
-    setOptions(provinceSelect, provinces, "All provinces");
-    refreshDistrictOptions();
+  .then(([primary, secondary]) => {
+    primaryFeatures = primary.features || [];
+    secondaryFeatures = secondary.features || [];
 
     map.addLayer(primaryCluster);
     map.addLayer(secondaryCluster);
 
-    primaryCluster.on("clusterclick", (event) => {
-      if (map.getZoom() === map.getMaxZoom()) {
-        event.layer.spiderfy();
-      }
-    });
-
-    secondaryCluster.on("clusterclick", (event) => {
-      if (map.getZoom() === map.getMaxZoom()) {
-        event.layer.spiderfy();
-      }
-    });
-
+    const provinces = [
+      ...new Set(
+        [...primaryFeatures, ...secondaryFeatures]
+          .map((f) => f.properties.Province)
+          .filter(Boolean)
+      ),
+    ].sort();
+    setOptions(provinceSelect, provinces, "All provinces");
+    refreshDistrictOptions();
     applyFilters();
-    fitToVisible();
+    loading.style.display = "none";
   })
   .catch((err) => {
-    // eslint-disable-next-line no-console
-    console.error("Failed to load school data:", err);
+    loading.textContent = "Failed to load school data.";
+    console.error(err);
   });
 
-searchInput.addEventListener("input", () => {
-  applyFilters();
-});
-
+searchInput.addEventListener("input", applyFilters);
 provinceSelect.addEventListener("change", () => {
   refreshDistrictOptions();
   applyFilters();
 });
+districtSelect.addEventListener("change", applyFilters);
 
-districtSelect.addEventListener("change", () => {
-  applyFilters();
-});
-
-primaryToggle.addEventListener("change", () => {
+togglePrimary.addEventListener("click", () => {
+  togglePrimary.classList.toggle("active");
   refreshDistrictOptions();
   applyFilters();
 });
-
-secondaryToggle.addEventListener("change", () => {
+toggleSecondary.addEventListener("click", () => {
+  toggleSecondary.classList.toggle("active");
   refreshDistrictOptions();
   applyFilters();
 });
 
 map.on("moveend zoomend", () => {
-  updateSummary(currentFiltered);
+  updateCounts(
+    activeLevels().primary
+      ? filterFeatures(
+          primaryFeatures,
+          normalize(searchInput.value),
+          provinceSelect.value,
+          districtSelect.value
+        )
+      : [],
+    activeLevels().secondary
+      ? filterFeatures(
+          secondaryFeatures,
+          normalize(searchInput.value),
+          provinceSelect.value,
+          districtSelect.value
+        )
+      : []
+  );
 });
