@@ -36,15 +36,25 @@ def main():
         if name:
             secondary_counts[normalize(name)] += 1
 
+    total_primary = sum(primary_counts.values())
+    total_secondary = sum(secondary_counts.values())
+    total_all = total_primary + total_secondary
+
     for feature in admin.get("features", []):
         props = feature.setdefault("properties", {})
         admin_name = props.get("admin1_name", "")
         key = normalize(admin_name)
         p_count = primary_counts.get(key, 0)
         s_count = secondary_counts.get(key, 0)
+        total = p_count + s_count
         props["primary_count"] = p_count
         props["secondary_count"] = s_count
-        props["total_count"] = p_count + s_count
+        props["total_count"] = total
+        props["primary_pct"] = (p_count / total_primary * 100) if total_primary else 0
+        props["secondary_pct"] = (
+            (s_count / total_secondary * 100) if total_secondary else 0
+        )
+        props["total_pct"] = (total / total_all * 100) if total_all else 0
 
     OUTPUT_PATH.write_text(json.dumps(admin, ensure_ascii=True), encoding="utf-8")
 
