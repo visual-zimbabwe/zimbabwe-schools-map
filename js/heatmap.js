@@ -30,7 +30,7 @@ const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
 const HEAT_RADIUS_KM = 5;
 const BASE_GRID_STEP_DEG = 0.25;
-const BASE_GRID_WEIGHT = 0.03;
+const BASE_GRID_WEIGHT = 0.01;
 const ZIMBABWE_BOUNDARY_SOURCES = [
   {
     type: "naturalearth",
@@ -161,13 +161,13 @@ function updateHeatLayer() {
     radius: heatRadiusPx(),
     blur: 8,
     maxZoom: 9,
-    minOpacity: 0.35,
+    minOpacity: 0.4,
     max: 0.4,
     gradient: {
       0.0: "#041527",
-      0.35: "#0b355d",
-      0.6: "#155a8a",
-      0.8: "#f2c84b",
+      0.4: "#0b355d",
+      0.7: "#155a8a",
+      0.85: "#f2c84b",
       1.0: "#ffd84a",
     },
   };

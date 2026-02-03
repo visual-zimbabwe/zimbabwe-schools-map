@@ -126,7 +126,7 @@ body {
 .legend-bar {
   height: 10px;
   border-radius: 6px;
-  background: linear-gradient(90deg, #041527, #0b355d 45%, #ffd84a 100%);
+  background: linear-gradient(90deg, #041527 0%, #0b355d 40%, #155a8a 70%, #ffd84a 100%);
 }
 
 .legend-scale {
