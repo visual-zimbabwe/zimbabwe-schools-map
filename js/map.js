@@ -26,6 +26,14 @@ const clusterLayer = L.markerClusterGroup({
   maxClusterRadius: 50,
 });
 
+const maskPane = map.createPane("maskPane");
+maskPane.style.zIndex = 650;
+maskPane.style.pointerEvents = "none";
+
+const boundaryPane = map.createPane("boundaryPane");
+boundaryPane.style.zIndex = 651;
+boundaryPane.style.pointerEvents = "none";
+
 function lngLatToLatLng(coords) {
   return coords.map((c) => [c[1], c[0]]);
 }
@@ -108,11 +116,13 @@ Promise.allSettled([boundaryPromise, schoolsPromise])
         fillColor: "#ffffff",
         fillOpacity: 1,
         interactive: false,
+        pane: "maskPane",
       });
       mask.addTo(map);
 
       // Boundary outline
       const boundaryLayer = L.geoJSON(boundaryGeo, {
+        pane: "boundaryPane",
         style: {
           color: "#111",
           weight: 2,
