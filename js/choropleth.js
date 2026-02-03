@@ -74,7 +74,8 @@ function interpolateColor(a, b, t) {
 
 function colorFor(value, breaks) {
   const max = breaks[1] || 1;
-  const t = Math.min(1, Math.max(0, value / max));
+  const linear = Math.min(1, Math.max(0, value / max));
+  const t = Math.sqrt(linear);
   const scaled = t * (gradientStops.length - 1);
   const idx = Math.floor(scaled);
   const localT = scaled - idx;
@@ -136,6 +137,11 @@ function renderLayer(geojson) {
     geoLayer.remove();
   }
   const values = geojson.features.map((feature) => getPct(feature));
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  if (min === max) {
+    console.warn("Choropleth percentages are identical:", min);
+  }
   const breaks = getBreaks(values);
   currentData = { breaks };
   buildLegend(breaks);
