@@ -253,10 +253,7 @@ function refreshDistrictOptions() {
   setOptions(districtSelect, unique, "All districts");
 }
 
-function loadGeoJson(windowKey, url) {
-  if (window[windowKey]) {
-    return Promise.resolve(window[windowKey]);
-  }
+function loadGeoJson(url) {
   return fetch(url).then((response) => {
     if (!response.ok) {
       throw new Error(`${url} -> ${response.status}`);
@@ -279,8 +276,8 @@ function fitToVisible() {
 }
 
 Promise.all([
-  loadGeoJson("PRIMARY_SCHOOLS", "data/primary_schools.geojson"),
-  loadGeoJson("SECONDARY_SCHOOLS", "data/secondary_schools.geojson"),
+  loadGeoJson("data/primary_schools.geojson"),
+  loadGeoJson("data/secondary_schools.geojson"),
 ])
   .then(([primaryData, secondaryData]) => {
     primaryFeatures = primaryData.features || [];

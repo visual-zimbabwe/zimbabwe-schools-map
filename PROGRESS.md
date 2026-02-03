@@ -32,3 +32,5 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Updated map UI and logic to show primary + secondary with toggles, legend, and counts.
 - Updated README to reflect primary + secondary map outputs.
 - Confirmed auto-push to GitHub after each commit.
+- Removed datasets from repo and added .gitignore entries for local data outputs.
+- Updated docs and map loading to rely on locally generated GeoJSON from downloaded source.

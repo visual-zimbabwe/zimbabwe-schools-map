@@ -1,0 +1,5 @@
+# Data files (downloaded locally)
+location_of_schools.csv
+
+data/*.geojson
+data/*.js

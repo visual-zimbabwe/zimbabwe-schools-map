@@ -5,14 +5,16 @@ This repo contains the Zimbabwe schools dataset and supporting notes for a minim
 Current focus:
 - Web v1.1: Map of Primary + Secondary Schools (Leaflet-based, static web app)
 
-Key data:
-- `location_of_schools.csv` (source dataset)
-- `data/primary_schools.geojson` (filtered, map-ready data)
-- `data/primary_schools.js` (embedded data for file-based loading)
-- `data/secondary_schools.geojson` (filtered, map-ready data)
-- `data/secondary_schools.js` (embedded data for file-based loading)
+Key data (not stored in repo):
+- Download the source dataset from Geo-Connect (MoPSE): see `Source.md`
+- Place it at `location_of_schools.csv`
+- Generate outputs with `python scripts/build_school_geojson.py`
+  - `data/primary_schools.geojson`
+  - `data/secondary_schools.geojson`
 
 How to run locally:
+- Download the dataset (see `Source.md`) and save it as `location_of_schools.csv`
+- Run `python scripts/build_school_geojson.py`
 - Open `index.html` in a browser or serve a local static server.
 
 Progress tracking:

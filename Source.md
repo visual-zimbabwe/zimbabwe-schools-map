@@ -6,6 +6,7 @@ This file lists public, ethical sources focused on schools in Zimbabwe (all leve
 
 - **Schools in Zimbabwe (Geo-Connect / MoPSE)** -- Point dataset of schools across Zimbabwe published on Geo-Connect; useful for school locations and identifiers.  
   **Format:** CSV. **Access:** Direct download. **Last updated:** 2025-06-18 (per dataset metadata).  
+  **Note:** This repo does not include the dataset. Download it and save as `location_of_schools.csv`, then run `python scripts/build_school_geojson.py`.  
   `https://data.geo-connect.org/datasets/schools-in-zimbabwe/`
 - **Zimbabwe Education Facilities (OpenStreetMap Export)** -- OSM-derived education facilities tagged as kindergarten, school, college, or university; provides geolocated features contributed by the OSM community.  
   **Format:** OSM export (resource formats vary on the source page). **Access:** Download via source page. **Last updated:** 2025-08-02 (temporal coverage on listing).  
