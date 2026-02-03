@@ -19,6 +19,12 @@ const clusterLayer = L.markerClusterGroup({
   maxClusterRadius: 50,
 });
 
+const schoolIcon = L.divIcon({
+  className: "school-marker",
+  iconSize: [10, 10],
+  iconAnchor: [5, 5],
+});
+
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -59,14 +65,7 @@ loadSchoolData()
   .then((geojson) => {
     const layer = L.geoJSON(geojson, {
       pointToLayer: (feature, latlng) =>
-        L.circleMarker(latlng, {
-          radius: 4,
-          fillColor: "#1f78b4",
-          color: "#0b3c5d",
-          weight: 1,
-          opacity: 1,
-          fillOpacity: 0.9,
-        }),
+        L.marker(latlng, { icon: schoolIcon, keyboard: false }),
       onEachFeature: (feature, layer) => {
         layer.bindPopup(buildPopup(feature.properties));
       },

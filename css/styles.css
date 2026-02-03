@@ -64,3 +64,11 @@ body {
   margin: 2px 0;
   color: #333;
 }
+
+.school-marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #1f78b4;
+  border: 1px solid #0b3c5d;
+}
