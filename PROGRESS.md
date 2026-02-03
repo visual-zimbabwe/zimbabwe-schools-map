@@ -90,3 +90,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Lowered heatmap max further to intensify separation and updated cache busting.
 - Switched heatmap radius to a 5km equivalent that updates on zoom.
 - Switched to a higher-resolution Natural Earth boundary with geoBoundaries and SimpleMaps fallbacks.
+- Removed basemap labels for a cleaner heatmap.

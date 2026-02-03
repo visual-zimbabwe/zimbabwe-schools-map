@@ -10,7 +10,7 @@ L.control.zoom({ position: "topleft" }).addTo(map);
 L.control.scale({ position: "bottomleft", imperial: false }).addTo(map);
 
 L.tileLayer(
-  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+  "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
   { attribution: "&copy; OpenStreetMap contributors &copy; CARTO" }
 ).addTo(map);
 
