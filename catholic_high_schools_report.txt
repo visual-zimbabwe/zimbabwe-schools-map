@@ -1,8 +1,0 @@
-total_names_from_openclass=31
-unique_schools_in_output=25
-unmatched=
-alias_duplicates (kept one)=
-  16029: Regina Mundi High School | Regina Mundi Secondary School
-ambiguous_duplicates (excluded)=
-  1059: Dominican Convent (Harare) | Dominican Convent (Bulawayo)
-  12052: Marist Brothers (Dete) | Marist Brothers (Nyanga) | Marist Brothers (Shungu, Kwekwe)

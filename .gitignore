@@ -3,3 +3,14 @@ location_of_schools.csv
 
 data/*.geojson
 data/*.js
+
+# Local-only docs and datasets
+AGENTS.md
+catholic_high_schools_report.txt
+catholic_high_schools_by_province.xlsx
+PROGRESS.md
+schools_primary_summary.md
+schools_primary.xlsx
+schools_secondary_summary.md
+schools_secondary.xlsx
+Source.md
