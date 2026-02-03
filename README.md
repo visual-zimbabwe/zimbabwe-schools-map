@@ -9,6 +9,7 @@ Key data:
 - `location_of_schools.csv` (source dataset)
 - `data/secondary_schools.geojson` (filtered, map-ready data)
 - `data/zimbabwe_boundary.geojson` (boundary for masking)
+- `data/zimbabwe_boundary.js` (boundary embedded for file-based loading)
 
 How to run locally:
 - Open `index.html` in a browser or serve a local static server.

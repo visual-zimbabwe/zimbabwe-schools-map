@@ -72,62 +72,84 @@ function buildPopup(props) {
   `;
 }
 
-Promise.all([
-  fetch("data/zimbabwe_boundary.geojson").then((r) => r.json()),
-  fetch("data/secondary_schools.geojson").then((r) => r.json()),
-])
-  .then(([boundaryGeo, schoolsGeo]) => {
-    const boundaryFeature = boundaryGeo.features[0];
+function fetchJson(url) {
+  return fetch(url).then((response) => {
+    if (!response.ok) {
+      throw new Error(`${url} -> ${response.status}`);
+    }
+    return response.json();
+  });
+}
 
-    // Mask outside Zimbabwe
-    const worldRing = [
-      [90, -180],
-      [90, 180],
-      [-90, 180],
-      [-90, -180],
-    ];
-    const holes = extractHoles(boundaryFeature.geometry);
-    const mask = L.polygon([worldRing, ...holes], {
-      stroke: false,
-      fillColor: "#ffffff",
-      fillOpacity: 0.88,
-      interactive: false,
-    });
-    mask.addTo(map);
+const boundaryPromise = window.ZIMBABWE_BOUNDARY
+  ? Promise.resolve(window.ZIMBABWE_BOUNDARY)
+  : fetchJson("data/zimbabwe_boundary.geojson");
+const schoolsPromise = fetchJson("data/secondary_schools.geojson");
 
-    // Boundary outline
-    const boundaryLayer = L.geoJSON(boundaryGeo, {
-      style: {
-        color: "#111",
-        weight: 2,
-        fill: false,
-      },
-    });
-    boundaryLayer.addTo(map);
+Promise.allSettled([boundaryPromise, schoolsPromise])
+  .then((results) => {
+    const boundaryResult = results[0];
+    const schoolsResult = results[1];
 
-    // Schools layer
-    const schoolsLayer = L.geoJSON(schoolsGeo, {
-      pointToLayer: (feature, latlng) =>
-        L.circleMarker(latlng, {
-          radius: 4,
-          fillColor: "#1f78b4",
-          color: "#0b3c5d",
-          weight: 1,
-          opacity: 1,
-          fillOpacity: 0.9,
-        }),
-      onEachFeature: (feature, layer) => {
-        layer.bindPopup(buildPopup(feature.properties));
-      },
-    });
+    if (boundaryResult.status === "fulfilled") {
+      const boundaryGeo = boundaryResult.value;
+      const boundaryFeature = boundaryGeo.features[0];
 
-    clusterLayer.addLayer(schoolsLayer);
-    map.addLayer(clusterLayer);
+      // Mask outside Zimbabwe
+      const worldRing = [
+        [90, -180],
+        [90, 180],
+        [-90, 180],
+        [-90, -180],
+      ];
+      const holes = extractHoles(boundaryFeature.geometry);
+      const mask = L.polygon([worldRing, ...holes], {
+        stroke: false,
+        fillColor: "#ffffff",
+        fillOpacity: 0.88,
+        interactive: false,
+      });
+      mask.addTo(map);
 
-    try {
-      map.fitBounds(boundaryLayer.getBounds(), { padding: [16, 16] });
-    } catch (err) {
-      // fallback to default view
+      // Boundary outline
+      const boundaryLayer = L.geoJSON(boundaryGeo, {
+        style: {
+          color: "#111",
+          weight: 2,
+          fill: false,
+        },
+      });
+      boundaryLayer.addTo(map);
+
+      try {
+        map.fitBounds(boundaryLayer.getBounds(), { padding: [16, 16] });
+      } catch (err) {
+        // fallback to default view
+      }
+    }
+
+    if (schoolsResult.status === "fulfilled") {
+      const schoolsGeo = schoolsResult.value;
+      const schoolsLayer = L.geoJSON(schoolsGeo, {
+        pointToLayer: (feature, latlng) =>
+          L.circleMarker(latlng, {
+            radius: 4,
+            fillColor: "#1f78b4",
+            color: "#0b3c5d",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9,
+          }),
+        onEachFeature: (feature, layer) => {
+          layer.bindPopup(buildPopup(feature.properties));
+        },
+      });
+
+      clusterLayer.addLayer(schoolsLayer);
+      map.addLayer(clusterLayer);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load school data:", schoolsResult.reason);
     }
   })
   .catch((err) => {

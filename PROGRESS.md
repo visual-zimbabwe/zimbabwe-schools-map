@@ -14,3 +14,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Removed CDN integrity attributes to avoid Leaflet/cluster assets blocking.
 - Constrained map bounds and zoom to Zimbabwe extent.
 - Added Zimbabwe boundary mask and outline.
+- Added boundary JS fallback and resilient loading for local file usage.
