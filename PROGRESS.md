@@ -97,4 +97,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added a dark-blue base fill layer so zero-density areas never appear white.
 - Boosted heatmap intensity and lowered max to bring out bright yellow hotspots.
 - Switched to a dark, basemap-free aesthetic with a purple→green→yellow ramp.
-- Fixed boundary mask fill rule to reveal the heatmap inside Zimbabwe.
+- Adjusted pane ordering so the mask sits below the heat layer and base fill.

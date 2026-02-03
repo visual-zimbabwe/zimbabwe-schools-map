@@ -175,7 +175,7 @@ function updateHeatLayer() {
   };
   if (!baseFill) {
     const basePane = map.createPane("baseFillPane");
-    basePane.style.zIndex = 420;
+    basePane.style.zIndex = 260;
     baseFill = L.rectangle(ZIM_BOUNDS, {
       pane: "baseFillPane",
       stroke: false,
@@ -183,10 +183,16 @@ function updateHeatLayer() {
       fillOpacity: 1,
     }).addTo(map);
   }
+  const heatPane = map.createPane("heatPane");
+  heatPane.style.zIndex = 300;
+  heatOptions.pane = "heatPane";
   if (heatLayer) {
     map.removeLayer(heatLayer);
   }
   heatLayer = L.heatLayer(points, heatOptions).addTo(map);
+  if (heatLayer && heatLayer.getPane()) {
+    heatLayer.getPane().style.zIndex = 300;
+  }
   updateStats();
   updateRanks();
 }
@@ -229,10 +235,10 @@ function addZimbabweMask(feature) {
   ];
 
   const maskPane = map.createPane("maskPane");
-  maskPane.style.zIndex = 450;
+  maskPane.style.zIndex = 250;
 
   const outlinePane = map.createPane("outlinePane");
-  outlinePane.style.zIndex = 460;
+  outlinePane.style.zIndex = 470;
 
   L.polygon([outerRing, ...rings], {
     pane: "maskPane",
