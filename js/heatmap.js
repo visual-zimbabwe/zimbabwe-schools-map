@@ -31,6 +31,10 @@ let heatReady = false;
 const HEAT_RADIUS_KM = 5;
 const ZIMBABWE_BOUNDARY_SOURCES = [
   {
+    type: "naturalearth",
+    url: "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson",
+  },
+  {
     type: "geoboundaries",
     url: "https://www.geoboundaries.org/api/current/gbOpen/ZWE/ADM0/",
   },
@@ -216,7 +220,7 @@ function addZimbabweMask(feature) {
     pane: "maskPane",
     stroke: false,
     fillColor: "#0b1320",
-    fillOpacity: 0.86,
+    fillOpacity: 1,
   }).addTo(map);
 
   L.geoJSON(feature, {
@@ -238,8 +242,28 @@ function normalizeBoundaryData(data) {
   return null;
 }
 
-function loadGeoBoundaries() {
+function loadNaturalEarth() {
   return fetch(ZIMBABWE_BOUNDARY_SOURCES[0].url)
+    .then((response) => {
+      if (!response.ok) throw new Error("Natural Earth fetch failed.");
+      return response.json();
+    })
+    .then((data) => {
+      const feature =
+        (data.features || []).find(
+          (item) =>
+            item.properties?.["ISO3166-1-Alpha-3"] === "ZWE" ||
+            item.properties?.ISO3166_1_Alpha_3 === "ZWE" ||
+            item.properties?.iso_a3 === "ZWE" ||
+            item.properties?.ADMIN === "Zimbabwe" ||
+            item.properties?.name === "Zimbabwe"
+        ) || null;
+      return feature;
+    });
+}
+
+function loadGeoBoundaries() {
+  return fetch(ZIMBABWE_BOUNDARY_SOURCES[1].url)
     .then((response) => {
       if (!response.ok) throw new Error("geoBoundaries metadata fetch failed.");
       return response.json();
@@ -256,7 +280,7 @@ function loadGeoBoundaries() {
 }
 
 function loadSimpleMaps() {
-  return fetch(ZIMBABWE_BOUNDARY_SOURCES[1].url)
+  return fetch(ZIMBABWE_BOUNDARY_SOURCES[2].url)
     .then((response) => {
       if (!response.ok) throw new Error("SimpleMaps boundary fetch failed.");
       return response.json();
@@ -265,7 +289,8 @@ function loadSimpleMaps() {
 }
 
 function loadZimbabweBoundary() {
-  loadGeoBoundaries()
+  loadNaturalEarth()
+    .catch(() => loadGeoBoundaries())
     .catch(() => loadSimpleMaps())
     .then((feature) => {
       if (feature) addZimbabweMask(feature);
