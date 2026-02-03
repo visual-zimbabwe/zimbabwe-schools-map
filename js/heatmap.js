@@ -29,6 +29,8 @@ let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
 const HEAT_RADIUS_KM = 5;
+const BASE_GRID_STEP_DEG = 0.25;
+const BASE_GRID_WEIGHT = 0.03;
 const ZIMBABWE_BOUNDARY_SOURCES = [
   {
     type: "naturalearth",
@@ -70,6 +72,13 @@ function buildHeatPoints() {
   const activePrimary = togglePrimary.classList.contains("active");
   const activeSecondary = toggleSecondary.classList.contains("active");
   const points = [];
+
+  const [[minLat, minLon], [maxLat, maxLon]] = ZIM_BOUNDS;
+  for (let lat = minLat; lat <= maxLat; lat += BASE_GRID_STEP_DEG) {
+    for (let lon = minLon; lon <= maxLon; lon += BASE_GRID_STEP_DEG) {
+      points.push([lat, lon, BASE_GRID_WEIGHT]);
+    }
+  }
 
   if (activePrimary) {
     primaryFeatures.forEach((feature) => {
@@ -152,7 +161,7 @@ function updateHeatLayer() {
     radius: heatRadiusPx(),
     blur: 8,
     maxZoom: 9,
-    minOpacity: 0.28,
+    minOpacity: 0.35,
     max: 0.4,
     gradient: {
       0.0: "#07162c",

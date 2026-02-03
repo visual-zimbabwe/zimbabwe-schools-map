@@ -91,3 +91,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Switched heatmap radius to a 5km equivalent that updates on zoom.
 - Switched to a higher-resolution Natural Earth boundary with geoBoundaries and SimpleMaps fallbacks.
 - Removed basemap labels for a cleaner heatmap.
+- Added a low-intensity background grid so the heatmap fills from zero.
