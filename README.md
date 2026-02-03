@@ -16,6 +16,9 @@ The source dataset is not stored in this repository. Download it from Geo-Connec
 Dataset source:
 - `https://zimgeoportal.org.zw/datasets/location-of-schools-in-zimbabwe/`
 
+Dataset last updated:
+- 20 Sep 2025
+
 ## Clean the source data (recommended)
 ```
 python scripts/clean_schools.py
