@@ -31,3 +31,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added primary schools GeoJSON/JS outputs and a build script for both levels.
 - Updated map UI and logic to show primary + secondary with toggles, legend, and counts.
 - Updated README to reflect primary + secondary map outputs.
+- Confirmed auto-push to GitHub after each commit.
