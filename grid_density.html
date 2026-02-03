@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zimbabwe School Density Grid</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="css/choropleth.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div id="map"></div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h1>School Density Grid</h1>
+            <p>Zimbabwe • 0.1 degree grid</p>
+          </div>
+          <span class="badge">Grid Density</span>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric">
+            <span>Visible cells</span>
+            <strong id="visibleCount">0</strong>
+          </div>
+          <div class="metric">
+            <span>Total schools</span>
+            <strong id="totalCount">0</strong>
+          </div>
+        </div>
+
+        <div class="controls">
+          <label for="levelSelect">School level</label>
+          <select id="levelSelect">
+            <option value="total">All schools</option>
+            <option value="primary">Primary only</option>
+            <option value="secondary">Secondary only</option>
+          </select>
+        </div>
+
+        <div class="note">
+          Each square shows school counts based on latitude/longitude points.
+          Zoom in for local density patterns.
+        </div>
+      </div>
+
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/grid_density.js"></script>
+  </body>
+</html>
