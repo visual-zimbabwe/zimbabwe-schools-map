@@ -17,3 +17,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added boundary JS fallback and resilient loading for local file usage.
 - Increased mask opacity and page background to fully hide outside boundaries.
 - Moved mask and boundary to dedicated panes above tiles to prevent flicker.
+- Added SVG clipPath to tile pane for Zimbabwe-only rendering.
