@@ -1,0 +1,10 @@
+# Progress Log
+
+Rule: Update this file whenever changes are made (files, data, plans, or decisions).
+
+## 2026-02-03
+- Added initial repository README.
+- Established progress logging rule.
+- Added AGENTS note to always update PROGRESS.md on changes.
+- Initialized git repository.
+- Added AGENTS note to always commit changes without asking for permission.
