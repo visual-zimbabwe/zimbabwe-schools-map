@@ -89,4 +89,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Applied stepped-style gradient and lower max for stronger heatmap separation.
 - Lowered heatmap max further to intensify separation and updated cache busting.
 - Switched heatmap radius to a 5km equivalent that updates on zoom.
-- Added a Zimbabwe boundary mask using a remote GeoJSON outline to hide the rest of the world.
+- Upgraded Zimbabwe boundary mask to high-resolution geoBoundaries with SimpleMaps fallback.

@@ -29,8 +29,16 @@ let heatLayer = null;
 const isFileProtocol = window.location.protocol === "file:";
 let heatReady = false;
 const HEAT_RADIUS_KM = 5;
-const ZIMBABWE_BOUNDARY_URL =
-  "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
+const ZIMBABWE_BOUNDARY_SOURCES = [
+  {
+    type: "geoboundaries",
+    url: "https://www.geoboundaries.org/api/current/gbOpen/ZWE/ADM0/",
+  },
+  {
+    type: "simplemaps",
+    url: "https://simplemaps.com/static/svg/country/zw/all/zw.json",
+  },
+];
 
 function primeWindowData() {
   if (window.PRIMARY_SCHOOLS && window.SECONDARY_SCHOOLS) {
@@ -221,23 +229,46 @@ function addZimbabweMask(feature) {
   }).addTo(map);
 }
 
-function loadZimbabweBoundary() {
-  fetch(ZIMBABWE_BOUNDARY_URL)
+function normalizeBoundaryData(data) {
+  if (!data) return null;
+  if (data.type === "Feature") return data;
+  if (data.type === "FeatureCollection" && data.features?.length) {
+    return data.features[0];
+  }
+  return null;
+}
+
+function loadGeoBoundaries() {
+  return fetch(ZIMBABWE_BOUNDARY_SOURCES[0].url)
     .then((response) => {
-      if (!response.ok) throw new Error("Boundary fetch failed.");
+      if (!response.ok) throw new Error("geoBoundaries metadata fetch failed.");
       return response.json();
     })
-    .then((data) => {
-      const feature =
-        (data.features || []).find(
-          (item) =>
-            item.id === "ZWE" ||
-            item.properties?.iso_a3 === "ZWE" ||
-            item.properties?.name === "Zimbabwe"
-        ) || null;
-      if (feature) {
-        addZimbabweMask(feature);
-      }
+    .then((meta) => {
+      const url = meta.gjDownloadURL || meta.simplifiedGeometryGeoJSON;
+      if (!url) throw new Error("geoBoundaries download URL missing.");
+      return fetch(url).then((response) => {
+        if (!response.ok) throw new Error("geoBoundaries file fetch failed.");
+        return response.json();
+      });
+    })
+    .then(normalizeBoundaryData);
+}
+
+function loadSimpleMaps() {
+  return fetch(ZIMBABWE_BOUNDARY_SOURCES[1].url)
+    .then((response) => {
+      if (!response.ok) throw new Error("SimpleMaps boundary fetch failed.");
+      return response.json();
+    })
+    .then(normalizeBoundaryData);
+}
+
+function loadZimbabweBoundary() {
+  loadGeoBoundaries()
+    .catch(() => loadSimpleMaps())
+    .then((feature) => {
+      if (feature) addZimbabweMask(feature);
     })
     .catch((err) => {
       console.warn("Boundary mask not loaded.", err);
