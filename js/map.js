@@ -106,7 +106,7 @@ Promise.allSettled([boundaryPromise, schoolsPromise])
       const mask = L.polygon([worldRing, ...holes], {
         stroke: false,
         fillColor: "#ffffff",
-        fillOpacity: 0.88,
+        fillOpacity: 1,
         interactive: false,
       });
       mask.addTo(map);

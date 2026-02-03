@@ -15,3 +15,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Constrained map bounds and zoom to Zimbabwe extent.
 - Added Zimbabwe boundary mask and outline.
 - Added boundary JS fallback and resilient loading for local file usage.
+- Increased mask opacity and page background to fully hide outside boundaries.
