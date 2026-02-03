@@ -20,3 +20,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added SVG clipPath to tile pane for Zimbabwe-only rendering.
 - Reverted boundary-outline removal (restored prior boundary behavior).
 - Reverting boundary masking and clipping to restore full world map.
+- Removed unused Zimbabwe boundary JS after reverting to full world map.
