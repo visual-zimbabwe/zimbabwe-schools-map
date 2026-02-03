@@ -47,9 +47,19 @@ def row_to_feature(row):
     }
 
 
+def open_csv(path: Path):
+    with path.open("rb") as handle:
+        start = handle.read(4)
+    if start.startswith(b"\xff\xfe") or start.startswith(b"\xfe\xff"):
+        encoding = "utf-16"
+    else:
+        encoding = "utf-8-sig"
+    return path.open(newline="", encoding=encoding)
+
+
 def build_geojson(level):
     features = []
-    with CSV_PATH.open(newline="", encoding="utf-8") as handle:
+    with open_csv(CSV_PATH) as handle:
         reader = csv.DictReader(handle)
         for row in reader:
             if (row.get("SchoolLevel") or "").strip() != level:
