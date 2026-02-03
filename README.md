@@ -1,21 +1,44 @@
-# Zimbabwe Schools Map (Minimal)
+# Zimbabwe Schools Map
 
-This repo contains the Zimbabwe schools dataset and supporting notes for a minimalist web tool concept.
+Minimal, static web map of Zimbabwe’s primary and secondary schools using Leaflet.
 
-Current focus:
-- Web v1.1: Map of Primary + Secondary Schools (Leaflet-based, static web app)
+## Features
+- Primary + secondary school layers with clustering
+- Search by name, filter by province/district, per-level counts
+- Offline-friendly static map once data is generated locally
 
-Key data (not stored in repo):
-- Download the source dataset from Geo-Connect (MoPSE): see `Source.md`
-- Place it at `location_of_schools.csv`
-- Generate outputs with `python scripts/build_school_geojson.py`
-  - `data/primary_schools.geojson`
-  - `data/secondary_schools.geojson`
+## Live site
+- GitHub Pages: `https://visual-zimbabwe.github.io/zimbabwe-schools-map/`
 
-How to run locally:
-- Download the dataset (see `Source.md`) and save it as `location_of_schools.csv`
-- Run `python scripts/build_school_geojson.py`
-- Open `index.html` in a browser or serve a local static server.
+## Data (not included)
+The source dataset is not stored in this repository. Download it from Geo-Connect (MoPSE) and save it as `location_of_schools.csv` in the repo root.
 
-Progress tracking:
-- Update `PROGRESS.md` whenever changes are made to files, data, or plans.
+Dataset source:
+- `https://data.geo-connect.org/datasets/schools-in-zimbabwe/`
+
+## Build the map data
+```
+python scripts/build_school_geojson.py
+```
+This generates:
+- `data/primary_schools.geojson`
+- `data/secondary_schools.geojson`
+
+## Run locally
+- Open `index.html` in a browser, or
+- Serve a static server from the repo root.
+
+## Project structure
+```
+.
++- css/
++- data/               # generated locally
++- js/
++- scripts/
++- index.html
++- README.md
+```
+
+## Credits
+- Data: Ministry of Primary and Secondary Education (MoPSE), published via Geo-Connect.
+- Map tiles: OpenStreetMap contributors.
