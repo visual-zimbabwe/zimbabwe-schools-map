@@ -3,11 +3,14 @@
 This repo contains the Zimbabwe schools dataset and supporting notes for a minimalist web tool concept.
 
 Current focus:
-- Idea 4: Map of Secondary Schools (Leaflet-based, static web app)
+- Web v1.0: Map of Secondary Schools (Leaflet-based, static web app)
 
 Key data:
 - `location_of_schools.csv` (source dataset)
-- Derived outputs (if any) live in `C:\data-source\`
+- `data/secondary_schools.geojson` (filtered, map-ready data)
+
+How to run locally:
+- Open `index.html` in a browser or serve a local static server.
 
 Progress tracking:
 - Update `PROGRESS.md` whenever changes are made to files, data, or plans.

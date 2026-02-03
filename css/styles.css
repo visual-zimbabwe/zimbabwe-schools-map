@@ -1,0 +1,65 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.legend {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-size: 13px;
+  color: #222;
+  min-width: 140px;
+}
+
+.legend-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #1f78b4;
+  display: inline-block;
+}
+
+.leaflet-popup-content {
+  margin: 8px 12px;
+  line-height: 1.3;
+}
+
+.popup-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.popup-row {
+  margin: 2px 0;
+  color: #333;
+}

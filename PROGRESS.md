@@ -9,3 +9,5 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Initialized git repository.
 - Added AGENTS note to always commit changes without asking for permission.
 - Added detailed project specification for the Map of Secondary Schools MVP.
+- Built Web v1.0 map: added static app files, styles, and Leaflet clustering.
+- Generated `data/secondary_schools.geojson` from `location_of_schools.csv`.
