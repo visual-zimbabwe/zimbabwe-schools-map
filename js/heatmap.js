@@ -59,14 +59,14 @@ function buildHeatPoints() {
   if (activePrimary) {
     primaryFeatures.forEach((feature) => {
       const [lon, lat] = feature.geometry.coordinates;
-      points.push([lat, lon, 0.85]);
+      points.push([lat, lon, 0.45]);
     });
   }
 
   if (activeSecondary) {
     secondaryFeatures.forEach((feature) => {
       const [lon, lat] = feature.geometry.coordinates;
-      points.push([lat, lon, 1.0]);
+      points.push([lat, lon, 0.7]);
     });
   }
 
@@ -137,15 +137,17 @@ function updateHeatLayer() {
     heatLayer.setLatLngs(points);
   } else {
     heatLayer = L.heatLayer(points, {
-      radius: 34,
-      blur: 26,
+      radius: 22,
+      blur: 18,
       maxZoom: 9,
       minOpacity: 0.32,
+      max: 3.0,
       gradient: {
-        0.0: "#1b2a4a",
-        0.35: "#2a6f97",
-        0.65: "#f1c453",
-        1.0: "#f0c04c",
+        0.0: "#0f233f",
+        0.25: "#1e4f78",
+        0.5: "#2a6f97",
+        0.7: "#f0c04c",
+        1.0: "#ffd77a",
       },
     }).addTo(map);
   }

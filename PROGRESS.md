@@ -84,3 +84,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added explicit window-data initialization and empty-data messaging for heatmap.
 - Ensured heatmap stats render immediately from embedded data on file protocol.
 - Set explicit heatmap container height to prevent zero-height map rendering.
+- Tuned heatmap intensity, radius, blur, and gradient for clearer contrast.
