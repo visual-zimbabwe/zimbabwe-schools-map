@@ -93,7 +93,8 @@ body {
 
 .map-card {
   position: relative;
-  min-height: 520px;
+  height: clamp(420px, 70vh, 680px);
+  min-height: 420px;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -102,6 +103,7 @@ body {
 #map {
   height: 100%;
   width: 100%;
+  min-height: 420px;
 }
 
 .map-legend {
