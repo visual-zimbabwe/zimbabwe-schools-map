@@ -8,3 +8,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added AGENTS note to always update PROGRESS.md on changes.
 - Initialized git repository.
 - Added AGENTS note to always commit changes without asking for permission.
+- Added detailed project specification for the Map of Secondary Schools MVP.
