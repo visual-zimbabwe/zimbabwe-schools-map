@@ -86,3 +86,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Set explicit heatmap container height to prevent zero-height map rendering.
 - Tuned heatmap intensity, radius, blur, and gradient for clearer contrast.
 - Increased heatmap contrast further with tighter radius/blur and lower max.
+- Applied stepped-style gradient and lower max for stronger heatmap separation.
