@@ -53,6 +53,8 @@ const storyText = document.getElementById("storyText");
 const loading = document.getElementById("loading");
 const togglePrimary = document.getElementById("togglePrimary");
 const toggleSecondary = document.getElementById("toggleSecondary");
+const clearFilters = document.getElementById("clearFilters");
+const schoolNames = document.getElementById("schoolNames");
 
 let primaryFeatures = [];
 let secondaryFeatures = [];
@@ -93,7 +95,7 @@ function makeMarker(feature, isPrimary) {
 }
 
 function setOptions(select, values, placeholder) {
-  const current = select.value;
+  const currentValues = getSelectedValues(select);
   select.innerHTML = "";
   const opt = document.createElement("option");
   opt.value = "";
@@ -105,9 +107,18 @@ function setOptions(select, values, placeholder) {
     item.textContent = value;
     select.appendChild(item);
   });
-  if ([...select.options].some((o) => o.value === current)) {
-    select.value = current;
-  }
+  currentValues.forEach((value) => {
+    const option = [...select.options].find((o) => o.value === value);
+    if (option) {
+      option.selected = true;
+    }
+  });
+}
+
+function getSelectedValues(select) {
+  return [...select.selectedOptions]
+    .map((option) => option.value)
+    .filter((value) => value);
 }
 
 function activeLevels() {
@@ -117,13 +128,13 @@ function activeLevels() {
   };
 }
 
-function filterFeatures(features, query, province, district) {
+function filterFeatures(features, query, provinces, districts) {
   return features.filter((feature) => {
     const props = feature.properties || {};
     const name = normalize(props.Name);
     if (query && !name.includes(query)) return false;
-    if (province && props.Province !== province) return false;
-    if (district && props.District !== district) return false;
+    if (provinces.length && !provinces.includes(props.Province)) return false;
+    if (districts.length && !districts.includes(props.District)) return false;
     return true;
   });
 }
@@ -146,14 +157,16 @@ function updateStory() {
 }
 
 function refreshDistrictOptions() {
-  const province = provinceSelect.value;
+  const provinces = getSelectedValues(provinceSelect);
   const levels = activeLevels();
   const all = [
     ...(levels.primary ? primaryFeatures : []),
     ...(levels.secondary ? secondaryFeatures : []),
   ];
   const districts = all
-    .filter((f) => !province || f.properties.Province === province)
+    .filter((f) =>
+      provinces.length ? provinces.includes(f.properties.Province) : true
+    )
     .map((f) => f.properties.District)
     .filter(Boolean);
   const unique = [...new Set(districts)].sort();
@@ -178,17 +191,17 @@ function updateCounts(filteredPrimary, filteredSecondary) {
 function applyFilters() {
   const { primary, secondary } = activeLevels();
   const query = normalize(searchInput.value);
-  const province = provinceSelect.value;
-  const district = districtSelect.value;
+  const provinces = getSelectedValues(provinceSelect);
+  const districts = getSelectedValues(districtSelect);
 
   primaryCluster.clearLayers();
   secondaryCluster.clearLayers();
 
   const filteredPrimary = primary
-    ? filterFeatures(primaryFeatures, query, province, district)
+    ? filterFeatures(primaryFeatures, query, provinces, districts)
     : [];
   const filteredSecondary = secondary
-    ? filterFeatures(secondaryFeatures, query, province, district)
+    ? filterFeatures(secondaryFeatures, query, provinces, districts)
     : [];
 
   filteredPrimary.forEach((feature) =>
@@ -219,6 +232,20 @@ Promise.all([
 
     map.addLayer(primaryCluster);
     map.addLayer(secondaryCluster);
+
+    const nameOptions = [
+      ...new Set(
+        [...primaryFeatures, ...secondaryFeatures]
+          .map((f) => f.properties.Name)
+          .filter(Boolean)
+      ),
+    ].sort();
+    schoolNames.innerHTML = "";
+    nameOptions.forEach((name) => {
+      const option = document.createElement("option");
+      option.value = name;
+      schoolNames.appendChild(option);
+    });
 
     const provinces = [
       ...new Set(
@@ -255,22 +282,34 @@ toggleSecondary.addEventListener("click", () => {
   applyFilters();
 });
 
+clearFilters.addEventListener("click", () => {
+  searchInput.value = "";
+  [...provinceSelect.options].forEach((opt) => (opt.selected = false));
+  [...districtSelect.options].forEach((opt) => (opt.selected = false));
+  togglePrimary.classList.add("active");
+  toggleSecondary.classList.add("active");
+  refreshDistrictOptions();
+  applyFilters();
+});
+
 map.on("moveend zoomend", () => {
+  const provinces = getSelectedValues(provinceSelect);
+  const districts = getSelectedValues(districtSelect);
   updateCounts(
     activeLevels().primary
       ? filterFeatures(
           primaryFeatures,
           normalize(searchInput.value),
-          provinceSelect.value,
-          districtSelect.value
+          provinces,
+          districts
         )
       : [],
     activeLevels().secondary
       ? filterFeatures(
           secondaryFeatures,
           normalize(searchInput.value),
-          provinceSelect.value,
-          districtSelect.value
+          provinces,
+          districts
         )
       : []
   );

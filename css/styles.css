@@ -125,6 +125,34 @@ select {
   font-size: 13px;
 }
 
+select[multiple] {
+  height: 92px;
+}
+
+.field-hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #6b778a;
+}
+
+.reset-btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.reset-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(17, 24, 39, 0.25);
+}
+
 .stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
