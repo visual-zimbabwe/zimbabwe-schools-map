@@ -174,27 +174,18 @@ function updateHeatLayer() {
       1.0: "#ffe066",
     },
   };
-  if (!baseFill) {
+  if (!baseFill && zimBoundaryFeature) {
     const basePane = map.createPane("baseFillPane");
     basePane.style.zIndex = 260;
-    if (zimBoundaryFeature) {
-      baseFill = L.geoJSON(zimBoundaryFeature, {
-        pane: "baseFillPane",
-        style: {
-          color: BASE_FILL_COLOR,
-          weight: 0,
-          fillColor: BASE_FILL_COLOR,
-          fillOpacity: 1,
-        },
-      }).addTo(map);
-    } else {
-      baseFill = L.rectangle(ZIM_BOUNDS, {
-        pane: "baseFillPane",
-        stroke: false,
+    baseFill = L.geoJSON(zimBoundaryFeature, {
+      pane: "baseFillPane",
+      style: {
+        color: BASE_FILL_COLOR,
+        weight: 0,
         fillColor: BASE_FILL_COLOR,
         fillOpacity: 1,
-      }).addTo(map);
-    }
+      },
+    }).addTo(map);
   }
   const heatPane = map.createPane("heatPane");
   heatPane.style.zIndex = 300;
@@ -333,8 +324,9 @@ function loadZimbabweBoundary() {
     .catch(() => loadGeoBoundaries())
     .catch(() => loadSimpleMaps())
     .then((feature) => {
-      if (feature) addZimbabweMask(feature);
-    })
+    if (feature) addZimbabweMask(feature);
+    updateHeatLayer();
+  })
     .catch((err) => {
       console.warn("Boundary mask not loaded.", err);
     });
