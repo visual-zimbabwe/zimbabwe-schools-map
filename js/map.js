@@ -28,13 +28,8 @@ function createMapApp() {
       const count = cluster.getChildCount();
       const size = count < 50 ? 36 : count < 200 ? 44 : 52;
       return L.divIcon({
-        html: `<div style="
-          width:${size}px;height:${size}px;border-radius:50%;
-          display:flex;align-items:center;justify-content:center;
-          background:radial-gradient(circle at 30% 30%, rgba(244,196,48,0.9), rgba(17,17,17,0.9));
-          color:white;font-weight:700;font-size:12px;box-shadow:0 8px 18px rgba(0,0,0,0.2)
-        ">${count}</div>`,
-        className: "",
+        html: `<div class="cluster-bubble" style="--cluster-size:${size}px">${count}</div>`,
+        className: "cluster-icon",
         iconSize: [size, size],
       });
     },
