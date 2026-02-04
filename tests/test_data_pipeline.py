@@ -1,5 +1,4 @@
 ﻿import csv
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -81,24 +80,24 @@ def test_clean_schools_removes_bad_coords_and_invalid_values():
     fieldnames = list(rows[0].keys())
     write_csv(input_csv, rows, fieldnames)
 
-    try:
-        result = subprocess.run(
-            [
-                sys.executable,
-                "scripts/clean_schools.py",
-                "--input",
-                str(input_csv),
-                "--output",
-                str(output_csv),
-                "--report",
-                str(report_md),
-            ],
-            cwd=Path(__file__).resolve().parents[1],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/clean_schools.py",
+            "--input",
+            str(input_csv),
+            "--output",
+            str(output_csv),
+            "--report",
+            str(report_md),
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
+    try:
         assert result.returncode == 0
         assert output_csv.exists()
         assert report_md.exists()
@@ -116,6 +115,10 @@ def test_clean_schools_removes_bad_coords_and_invalid_values():
         assert cleaned[2]["longitude"] == ""
         assert cleaned[3]["SchoolLevel"] == ""
         assert cleaned[3]["Grant_Class"] == ""
+
+        report_text = report_md.read_text(encoding="utf-8")
+        assert "Missing lat/lon (raw): 2" in report_text
+        assert "Missing lat/lon (final): 2" in report_text
     finally:
         for path in (input_csv, output_csv, report_md):
             try:
