@@ -45,4 +45,4 @@ Do not commit secrets or local environment files. Keep machine-specific configur
 
 - Always update `PROGRESS.md` whenever files, data, or plans change.
 - Always commit changes without asking for permission.
-- Never `git push` changes that include `CODEBASE_CRITICS.md` or `PROGRESS.md`.
+- Never `git push` changes that include any files listed in `.gitignore`.
