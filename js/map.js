@@ -203,19 +203,32 @@ function createMapApp() {
     labelEl.textContent = label;
   }
 
+  const multiSelectContainers = new Set();
+  let multiSelectGlobalListenerAttached = false;
+
+  function registerMultiSelect(container) {
+    if (!multiSelectContainers.has(container)) {
+      multiSelectContainers.add(container);
+    }
+    if (multiSelectGlobalListenerAttached) return;
+    document.addEventListener("click", (event) => {
+      multiSelectContainers.forEach((select) => {
+        if (!select.contains(event.target)) {
+          select.classList.remove("open");
+        }
+      });
+    });
+    multiSelectGlobalListenerAttached = true;
+  }
+
   function setupMultiSelect(container, placeholder, onChange) {
     const trigger = container.querySelector(".multi-trigger");
     const labelEl = trigger.querySelector(".multi-label");
     labelEl.textContent = placeholder;
+    registerMultiSelect(container);
 
     trigger.addEventListener("click", () => {
       container.classList.toggle("open");
-    });
-
-    document.addEventListener("click", (event) => {
-      if (!container.contains(event.target)) {
-        container.classList.remove("open");
-      }
     });
 
     container.addEventListener("click", (event) => {
