@@ -1,4 +1,4 @@
-# Progress Log
+﻿# Progress Log
 
 Rule: Update this file whenever changes are made (files, data, plans, or decisions).
 
@@ -110,3 +110,6 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Adjusted mobile safe-area and dynamic viewport sizing to avoid overlap with bottom browser UI.
 - Added a dynamic bottom inset so the filter toggle clears mobile browser UI.
 - Made the filter toggle visible by default and hide it only on desktop-class pointers.
+
+## 2026-02-04
+- Saved the codebase critique as `CODEBASE_CRITIC.md`.
