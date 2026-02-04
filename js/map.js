@@ -243,12 +243,18 @@ function activeLevels() {
 }
 
 function filterFeatures(features, query, provinces, districts) {
+  const provinceKeys = provinces.map(normalize);
+  const districtKeys = districts.map(normalize);
   return features.filter((feature) => {
     const props = feature.properties || {};
     const name = normalize(props.Name);
     if (query && !name.includes(query)) return false;
-    if (provinces.length && !provinces.includes(props.Province)) return false;
-    if (districts.length && !districts.includes(props.District)) return false;
+    if (provinceKeys.length && !provinceKeys.includes(feature._provinceKey)) {
+      return false;
+    }
+    if (districtKeys.length && !districtKeys.includes(feature._districtKey)) {
+      return false;
+    }
     return true;
   });
 }
@@ -345,10 +351,16 @@ Promise.all([
     primaryFeatures = primary.features || [];
     secondaryFeatures = secondary.features || [];
 
+    const normalizeFeatureLabels = (feature) => {
+      feature._provinceKey = normalize(feature.properties?.Province);
+      feature._districtKey = normalize(feature.properties?.District);
+    };
     primaryFeatures.forEach((feature) => {
+      normalizeFeatureLabels(feature);
       markerByFeature.set(feature, makeMarker(feature, true));
     });
     secondaryFeatures.forEach((feature) => {
+      normalizeFeatureLabels(feature);
       markerByFeature.set(feature, makeMarker(feature, false));
     });
 
