@@ -58,8 +58,8 @@ body {
 }
 
 .panel-toggle {
-  display: none;
-  position: absolute;
+  display: inline-flex;
+  position: fixed;
   top: 18px;
   right: 18px;
   z-index: 1100;
@@ -363,6 +363,12 @@ select {
   background: rgba(255, 255, 255, 0.78);
   z-index: 2000;
   font-weight: 600;
+}
+
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) {
+  .panel-toggle {
+    display: none;
+  }
 }
 
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {

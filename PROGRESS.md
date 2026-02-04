@@ -109,3 +109,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Expanded the mobile breakpoint to include coarse-pointer devices so the filter toggle appears on large phones.
 - Adjusted mobile safe-area and dynamic viewport sizing to avoid overlap with bottom browser UI.
 - Added a dynamic bottom inset so the filter toggle clears mobile browser UI.
+- Made the filter toggle visible by default and hide it only on desktop-class pointers.
