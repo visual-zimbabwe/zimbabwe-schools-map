@@ -199,14 +199,22 @@ Code:
     js_payload = f"window.{config['window']} = {json.dumps(geojson, ensure_ascii=True)};\n"
     config["js"].write_text(js_payload, encoding="utf-8")
 ```
-Why this is bad: Dead outputs waste time and create confusion about the true data path.
+Why this is bad: The app only fetches GeoJSON and never reads `window.PRIMARY_SCHOOLS` / `window.SECONDARY_SCHOOLS`, so this output is dead weight and creates a misleading data contract.
 Fix:
 ```python
-    if config.get("js"):
-        js_payload = f"window.{config['window']} = {json.dumps(geojson, ensure_ascii=True)};\n"
-        config["js"].write_text(js_payload, encoding="utf-8")
+# Remove JS payload outputs entirely and keep only GeoJSON.
+LEVELS = {
+    "Primary": {"geojson": DATA_DIR / "primary_schools.geojson"},
+    "Secondary": {"geojson": DATA_DIR / "secondary_schools.geojson"},
+}
+
+def write_outputs(level, config, source_path: Path):
+    geojson = build_geojson(level, source_path)
+    config["geojson"].write_text(
+        json.dumps(geojson, ensure_ascii=True), encoding="utf-8"
+    )
 ```
-Impact: Avoids unused artifacts and clarifies the data contract.
+Impact: Eliminates unused artifacts and makes the output contract explicit.
 
 ## Overall Assessment
 Score: 5/10  
