@@ -1,10 +1,5 @@
 function createMapApp() {
-  const ZIM_BOUNDS = [
-    [-22.5, 25.2],
-    [-15.3, 33.2],
-  ];
-
-  const map = L.map("map", { zoomControl: false }).fitBounds(ZIM_BOUNDS);
+  const map = L.map("map", { zoomControl: false }).setView([0, 0], 2);
   L.control.zoom({ position: "topleft" }).addTo(map);
 
   const baseLayers = {
@@ -55,6 +50,23 @@ function createMapApp() {
   const mediaQuery = window.matchMedia(
     "(max-width: 900px), (hover: none) and (pointer: coarse)"
   );
+
+  function boundsToLeaflet(bounds) {
+    return [
+      [bounds.lat_min, bounds.lon_min],
+      [bounds.lat_max, bounds.lon_max],
+    ];
+  }
+
+  function loadBounds() {
+    return fetch("data/bounds.json")
+      .then((response) => {
+        if (!response.ok) throw new Error("bounds");
+        return response.json();
+      })
+      .then((bounds) => boundsToLeaflet(bounds))
+      .catch(() => null);
+  }
 
   function updateBrowserUIInset() {
     if (!window.visualViewport) return;
@@ -342,8 +354,9 @@ function createMapApp() {
   Promise.all([
     loadGeoJSON("data/primary_schools.geojson"),
     loadGeoJSON("data/secondary_schools.geojson"),
+    loadBounds(),
   ])
-    .then(([primary, secondary]) => {
+    .then(([primary, secondary, bounds]) => {
       primaryFeatures = primary.features || [];
       secondaryFeatures = secondary.features || [];
 
@@ -394,6 +407,18 @@ function createMapApp() {
       applyFilters();
       loading.style.display = "none";
       syncPanelForViewport();
+      if (bounds) {
+        map.fitBounds(bounds);
+      } else {
+        const all = [...primaryFeatures, ...secondaryFeatures];
+        if (all.length) {
+          const latLngs = all.map((f) => {
+            const [lon, lat] = f.geometry.coordinates;
+            return [lat, lon];
+          });
+          map.fitBounds(latLngs);
+        }
+      }
     })
     .catch((err) => {
       loading.textContent = "Failed to load school data.";

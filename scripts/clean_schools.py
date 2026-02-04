@@ -3,6 +3,11 @@ import csv
 from collections import Counter
 from pathlib import Path
 
+try:
+    from scripts.constants import ZIM_BOUNDS
+except ModuleNotFoundError:
+    from constants import ZIM_BOUNDS
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 DEFAULT_INPUT = ROOT / "location_of_schools.csv"
@@ -11,12 +16,6 @@ REPORT_PATH = DATA_DIR / "quality_report.md"
 
 ALLOWED_LEVELS = {"Primary", "Secondary"}
 ALLOWED_GRANT_CLASS = {"P1", "P2", "P3", "S1", "S2", "S3"}
-
-ZIM_LAT_MIN = -23.5
-ZIM_LAT_MAX = -15.5
-ZIM_LON_MIN = 25.0
-ZIM_LON_MAX = 34.0
-
 
 def open_csv(path: Path):
     with path.open("rb") as handle:
@@ -47,7 +46,10 @@ def parse_float(value):
 
 
 def coords_in_zimbabwe(lat, lon):
-    return ZIM_LAT_MIN <= lat <= ZIM_LAT_MAX and ZIM_LON_MIN <= lon <= ZIM_LON_MAX
+    return (
+        ZIM_BOUNDS["lat_min"] <= lat <= ZIM_BOUNDS["lat_max"]
+        and ZIM_BOUNDS["lon_min"] <= lon <= ZIM_BOUNDS["lon_max"]
+    )
 
 
 def try_utm_to_latlon(x, y):

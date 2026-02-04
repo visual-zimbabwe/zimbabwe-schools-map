@@ -3,10 +3,16 @@ import csv
 import json
 from pathlib import Path
 
+try:
+    from scripts.constants import ZIM_BOUNDS
+except ModuleNotFoundError:
+    from constants import ZIM_BOUNDS
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 DEFAULT_CSV = ROOT / "location_of_schools.csv"
 CLEANED_CSV = DATA_DIR / "clean_schools.csv"
+BOUNDS_JSON = DATA_DIR / "bounds.json"
 
 LEVELS = {
     "Primary": {
@@ -21,12 +27,6 @@ LEVELS = {
     },
 }
 
-ZIM_LAT_MIN = -23.5
-ZIM_LAT_MAX = -15.5
-ZIM_LON_MIN = 25.0
-ZIM_LON_MAX = 34.0
-
-
 def parse_float(value):
     try:
         return float(value)
@@ -35,7 +35,10 @@ def parse_float(value):
 
 
 def coords_in_zimbabwe(lat, lon):
-    return ZIM_LAT_MIN <= lat <= ZIM_LAT_MAX and ZIM_LON_MIN <= lon <= ZIM_LON_MAX
+    return (
+        ZIM_BOUNDS["lat_min"] <= lat <= ZIM_BOUNDS["lat_max"]
+        and ZIM_BOUNDS["lon_min"] <= lon <= ZIM_BOUNDS["lon_max"]
+    )
 
 
 def row_to_feature(row):
@@ -109,6 +112,12 @@ def write_outputs(level, config, source_path: Path):
     config["js"].write_text(js_payload, encoding="utf-8")
 
 
+def write_bounds():
+    BOUNDS_JSON.write_text(
+        json.dumps(ZIM_BOUNDS, ensure_ascii=True), encoding="utf-8"
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Build GeoJSON outputs for primary and secondary schools."
@@ -127,6 +136,7 @@ def main():
         raise SystemExit(f"Source CSV not found: {source_path}")
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    write_bounds()
     for level, config in LEVELS.items():
         write_outputs(level, config, source_path)
 
