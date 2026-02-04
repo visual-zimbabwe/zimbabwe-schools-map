@@ -144,7 +144,7 @@ def main():
 
                 if lat is None or lon is None:
                     stats["missing_latlon_raw"] += 1
-                    if lat is None and lon is None and x is not None and y is not None:
+                    if x is not None and y is not None:
                         converted = try_utm_to_latlon(x, y)
                         if converted:
                             lat, lon = converted
