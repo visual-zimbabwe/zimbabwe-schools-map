@@ -104,3 +104,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Deleted heatmap.png and removed its related artifacts.
 - Improved mobile layout so the map keeps at least half the viewport height and the filter panel scrolls.
 - Added a mobile-first bottom-sheet filter panel with a toggle button and full-height map view.
+- Moved the mobile filter toggle to the bottom-right and fully hide the panel when collapsed.

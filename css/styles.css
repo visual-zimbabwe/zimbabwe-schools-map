@@ -60,7 +60,7 @@ body {
   display: none;
   position: absolute;
   top: 18px;
-  left: 18px;
+  right: 18px;
   z-index: 1100;
   border: none;
   border-radius: 999px;
@@ -380,12 +380,16 @@ select {
     transition: transform 180ms ease;
   }
   body.panel-collapsed .panel {
-    transform: translateY(calc(100% - 56px));
+    transform: translateY(100%);
   }
   .panel-toggle {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    top: auto;
+    left: auto;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
   }
   .legend {
     left: auto;
