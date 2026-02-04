@@ -3,6 +3,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import uuid
 from pathlib import Path
 
 
@@ -14,17 +15,18 @@ def write_csv(path: Path, rows, fieldnames):
         writer.writerows(rows)
 
 
-def _make_temp_dir():
+def _base_temp_dir():
     base_dir = Path(tempfile.gettempdir()) / "zimbabwe-tests"
     base_dir.mkdir(parents=True, exist_ok=True)
-    return Path(tempfile.mkdtemp(prefix="case-", dir=base_dir))
+    return base_dir
 
 
 def test_clean_schools_removes_bad_coords():
-    tmp_path = _make_temp_dir()
-    input_csv = tmp_path / "input.csv"
-    output_csv = tmp_path / "clean.csv"
-    report_md = tmp_path / "report.md"
+    base_dir = _base_temp_dir()
+    token = uuid.uuid4().hex
+    input_csv = base_dir / f"input-{token}.csv"
+    output_csv = base_dir / f"clean-{token}.csv"
+    report_md = base_dir / f"report-{token}.md"
 
     rows = [
         {
@@ -101,14 +103,19 @@ def test_clean_schools_removes_bad_coords():
         assert cleaned[2]["latitude"] == ""
         assert cleaned[2]["longitude"] == ""
     finally:
-        shutil.rmtree(tmp_path, ignore_errors=True)
+        for path in (input_csv, output_csv, report_md):
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
 
 
 def test_build_geojson_filters_by_level():
     from scripts import build_school_geojson as geo
 
-    tmp_path = _make_temp_dir()
-    input_csv = tmp_path / "schools.csv"
+    base_dir = _base_temp_dir()
+    token = uuid.uuid4().hex
+    input_csv = base_dir / f"schools-{token}.csv"
     rows = [
         {
             "Schoolnumber": "101",
@@ -152,4 +159,7 @@ def test_build_geojson_filters_by_level():
         assert feature["properties"]["Schoolnumber"] == "101"
         assert feature["geometry"]["coordinates"] == [31.0, -17.8]
     finally:
-        shutil.rmtree(tmp_path, ignore_errors=True)
+        try:
+            input_csv.unlink()
+        except FileNotFoundError:
+            pass
