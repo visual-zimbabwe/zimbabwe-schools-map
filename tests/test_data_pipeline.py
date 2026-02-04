@@ -180,3 +180,27 @@ def test_build_geojson_filters_by_level():
             input_csv.unlink()
         except FileNotFoundError:
             pass
+
+
+def test_try_utm_to_latlon_prefers_in_bounds_zone(monkeypatch):
+    from scripts import clean_schools as clean
+
+    class FakeTransformer:
+        def __init__(self, epsg):
+            self.epsg = epsg
+
+        def transform(self, x, y):
+            if self.epsg == "EPSG:32735":
+                return 28.0, -20.0
+            return 40.0, -10.0
+
+    class FakePyproj:
+        class Transformer:
+            @staticmethod
+            def from_crs(epsg, _to, always_xy=True):
+                return FakeTransformer(epsg)
+
+    monkeypatch.setitem(sys.modules, "pyproj", FakePyproj)
+
+    lat, lon = clean.try_utm_to_latlon(1, 1)
+    assert (lat, lon) == (-20.0, 28.0)
