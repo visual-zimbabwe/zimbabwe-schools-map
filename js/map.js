@@ -177,21 +177,23 @@ function setMultiSelectOptions(container, values, placeholder) {
 
 function updateMultiSelectLabel(container, placeholder) {
   const trigger = container.querySelector(".multi-trigger");
+  const labelEl = trigger.querySelector(".multi-label");
   const values = getSelectedValues(container);
   if (!values.length) {
-    trigger.firstChild.textContent = placeholder;
+    labelEl.textContent = placeholder;
     return;
   }
   const label =
     values.length === 1
       ? values[0]
       : `${values.length} selected`;
-  trigger.firstChild.textContent = label;
+  labelEl.textContent = label;
 }
 
 function setupMultiSelect(container, placeholder, onChange) {
   const trigger = container.querySelector(".multi-trigger");
-  trigger.firstChild.textContent = placeholder;
+  const labelEl = trigger.querySelector(".multi-label");
+  labelEl.textContent = placeholder;
 
   trigger.addEventListener("click", () => {
     container.classList.toggle("open");
