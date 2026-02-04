@@ -35,7 +35,13 @@ def normalize_title(value: str) -> str:
     if not value:
         return ""
     value = normalize_spaces(value)
-    return value.title()
+    words = []
+    for word in value.split(" "):
+        if word.isupper():
+            words.append(word)
+        else:
+            words.append(word.capitalize())
+    return " ".join(words)
 
 
 def parse_float(value):
