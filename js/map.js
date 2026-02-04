@@ -115,7 +115,7 @@ function createMapApp() {
   }
 
   function normalize(value) {
-    return String(value || "").trim().toLowerCase();
+    return String(value ?? "").trim().toLowerCase();
   }
 
   function escapeHtml(value) {
