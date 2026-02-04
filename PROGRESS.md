@@ -115,3 +115,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Saved the codebase critique as `CODEBASE_CRITIC.md`.
 - Cached markers and debounced search input to improve filter performance.
 - Vendored Leaflet and MarkerCluster assets locally and updated HTML references.
+- Added Leaflet license file to vendored assets.
