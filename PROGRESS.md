@@ -113,3 +113,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 
 ## 2026-02-04
 - Saved the codebase critique as `CODEBASE_CRITIC.md`.
+- Cached markers and debounced search input to improve filter performance.

@@ -97,6 +97,14 @@ let primaryFeatures = [];
 let secondaryFeatures = [];
 let currentFiltered = [];
 
+function debounce(fn, delay) {
+  let timerId;
+  return (...args) => {
+    if (timerId) clearTimeout(timerId);
+    timerId = setTimeout(() => fn(...args), delay);
+  };
+}
+
 function normalize(value) {
   return String(value || "").trim().toLowerCase();
 }
@@ -303,11 +311,9 @@ function applyFilters() {
     ? filterFeatures(secondaryFeatures, query, provinces, districts)
     : [];
 
-  filteredPrimary.forEach((feature) =>
-    primaryCluster.addLayer(makeMarker(feature, true))
-  );
-  filteredSecondary.forEach((feature) =>
-    secondaryCluster.addLayer(makeMarker(feature, false))
+  primaryCluster.addLayers(filteredPrimary.map((feature) => feature._marker));
+  secondaryCluster.addLayers(
+    filteredSecondary.map((feature) => feature._marker)
   );
 
   updateCounts(filteredPrimary, filteredSecondary);
@@ -328,6 +334,13 @@ Promise.all([
   .then(([primary, secondary]) => {
     primaryFeatures = primary.features || [];
     secondaryFeatures = secondary.features || [];
+
+    primaryFeatures.forEach((feature) => {
+      feature._marker = makeMarker(feature, true);
+    });
+    secondaryFeatures.forEach((feature) => {
+      feature._marker = makeMarker(feature, false);
+    });
 
     map.addLayer(primaryCluster);
     map.addLayer(secondaryCluster);
@@ -369,7 +382,9 @@ Promise.all([
     console.error(err);
   });
 
-searchInput.addEventListener("input", applyFilters);
+const debouncedApplyFilters = debounce(applyFilters, 200);
+
+searchInput.addEventListener("input", debouncedApplyFilters);
 togglePrimary.addEventListener("click", () => {
   togglePrimary.classList.toggle("active");
   refreshDistrictOptions();
