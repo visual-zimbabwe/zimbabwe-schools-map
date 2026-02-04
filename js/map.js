@@ -288,9 +288,12 @@ function updateCounts(filteredPrimary, filteredSecondary) {
   filteredCountEl.textContent = combined.length.toLocaleString();
   primaryCountEl.textContent = filteredPrimary.length.toLocaleString();
   secondaryCountEl.textContent = filteredSecondary.length.toLocaleString();
+  updateInViewCount();
+}
 
+function updateInViewCount() {
   const bounds = map.getBounds();
-  const inView = combined.filter((f) => {
+  const inView = currentFiltered.filter((f) => {
     const [lon, lat] = f.geometry.coordinates;
     return bounds.contains([lat, lon]);
   });
@@ -430,24 +433,5 @@ if (window.visualViewport) {
 updateBrowserUIInset();
 
 map.on("moveend zoomend", () => {
-  const provinces = getSelectedValues(provinceSelect);
-  const districts = getSelectedValues(districtSelect);
-  updateCounts(
-    activeLevels().primary
-      ? filterFeatures(
-          primaryFeatures,
-          normalize(searchInput.value),
-          provinces,
-          districts
-        )
-      : [],
-    activeLevels().secondary
-      ? filterFeatures(
-          secondaryFeatures,
-          normalize(searchInput.value),
-          provinces,
-          districts
-        )
-      : []
-  );
+  updateInViewCount();
 });
