@@ -435,7 +435,11 @@ function createMapApp() {
     })
     .catch((err) => {
       loading.textContent = "Failed to load school data.";
+      loading.classList.add("error");
       console.error(err);
+    })
+    .finally(() => {
+      loading.style.display = "none";
     });
 
   const debouncedApplyFilters = debounce(applyFilters, 200);
