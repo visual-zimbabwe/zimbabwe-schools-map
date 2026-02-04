@@ -387,8 +387,8 @@ select {
     align-items: center;
     gap: 6px;
     top: auto;
-    left: auto;
-    right: 12px;
+    left: 12px;
+    right: auto;
     bottom: calc(12px + env(safe-area-inset-bottom));
   }
   .legend {
