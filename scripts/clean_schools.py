@@ -116,8 +116,20 @@ def main():
 
                 cleaned = clean_row(row)
 
-                level_counts[cleaned.get("SchoolLevel", "")] += 1
-                grant_counts[cleaned.get("Grant_Class", "")] += 1
+                level = cleaned.get("SchoolLevel", "")
+                if level and level not in ALLOWED_LEVELS:
+                    stats["invalid_level"] += 1
+                    cleaned["SchoolLevel"] = ""
+                    level = ""
+
+                grant = cleaned.get("Grant_Class", "")
+                if grant and grant not in ALLOWED_GRANT_CLASS:
+                    stats["invalid_grant"] += 1
+                    cleaned["Grant_Class"] = ""
+                    grant = ""
+
+                level_counts[level] += 1
+                grant_counts[grant] += 1
 
                 lat = parse_float(cleaned.get("latitude"))
                 lon = parse_float(cleaned.get("longitude"))
@@ -162,6 +174,8 @@ def main():
         f"- Filled from X/Y: {stats['filled_from_xy']}",
         f"- Zero coords removed: {stats['zero_coords']}",
         f"- Out-of-bounds coords removed: {stats['out_of_bounds']}",
+        f"- Invalid school levels cleared: {stats['invalid_level']}",
+        f"- Invalid grant classes cleared: {stats['invalid_grant']}",
         "",
         "## School Levels",
     ]
