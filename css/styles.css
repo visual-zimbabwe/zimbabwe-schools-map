@@ -12,6 +12,7 @@
   --sky: #1f78b4;
   --card: rgba(255, 255, 255, 0.96);
   --shadow: 0 18px 40px rgba(10, 20, 40, 0.16);
+  --chrome-bottom: 0px;
 }
 
 * {
@@ -389,7 +390,7 @@ select {
     top: auto;
     left: 12px;
     right: auto;
-    bottom: calc(12px + env(safe-area-inset-bottom));
+    bottom: calc(12px + env(safe-area-inset-bottom) + var(--chrome-bottom));
   }
   .legend {
     left: auto;

@@ -60,6 +60,18 @@ const mediaQuery = window.matchMedia(
   "(max-width: 900px), (hover: none) and (pointer: coarse)"
 );
 
+function updateBrowserUIInset() {
+  if (!window.visualViewport) return;
+  const chromeBottom = Math.max(
+    0,
+    window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop
+  );
+  document.documentElement.style.setProperty(
+    "--chrome-bottom",
+    `${chromeBottom}px`
+  );
+}
+
 function setPanelCollapsed(collapsed) {
   document.body.classList.toggle("panel-collapsed", collapsed);
   if (panelToggle) {
@@ -78,6 +90,7 @@ function syncPanelForViewport() {
     document.body.classList.remove("panel-init");
     setPanelCollapsed(false);
   }
+  updateBrowserUIInset();
 }
 
 let primaryFeatures = [];
@@ -393,6 +406,11 @@ if (panelToggle) {
 
 mediaQuery.addEventListener("change", syncPanelForViewport);
 syncPanelForViewport();
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", updateBrowserUIInset);
+  window.visualViewport.addEventListener("scroll", updateBrowserUIInset);
+}
+updateBrowserUIInset();
 
 map.on("moveend zoomend", () => {
   const provinces = getSelectedValues(provinceSelect);
