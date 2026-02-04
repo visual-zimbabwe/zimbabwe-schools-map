@@ -96,6 +96,7 @@ function syncPanelForViewport() {
 let primaryFeatures = [];
 let secondaryFeatures = [];
 let currentFiltered = [];
+const markerByFeature = new Map();
 
 function debounce(fn, delay) {
   let timerId;
@@ -137,6 +138,10 @@ function makeMarker(feature, isPrimary) {
   const marker = L.marker([lat, lon], { icon });
   marker.bindPopup(buildPopup(feature.properties));
   return marker;
+}
+
+function getMarker(feature) {
+  return markerByFeature.get(feature);
 }
 
 function getSelectedValues(container) {
@@ -316,9 +321,9 @@ function applyFilters() {
     ? filterFeatures(secondaryFeatures, query, provinces, districts)
     : [];
 
-  primaryCluster.addLayers(filteredPrimary.map((feature) => feature._marker));
+  primaryCluster.addLayers(filteredPrimary.map((feature) => getMarker(feature)));
   secondaryCluster.addLayers(
-    filteredSecondary.map((feature) => feature._marker)
+    filteredSecondary.map((feature) => getMarker(feature))
   );
 
   updateCounts(filteredPrimary, filteredSecondary);
@@ -341,10 +346,10 @@ Promise.all([
     secondaryFeatures = secondary.features || [];
 
     primaryFeatures.forEach((feature) => {
-      feature._marker = makeMarker(feature, true);
+      markerByFeature.set(feature, makeMarker(feature, true));
     });
     secondaryFeatures.forEach((feature) => {
-      feature._marker = makeMarker(feature, false);
+      markerByFeature.set(feature, makeMarker(feature, false));
     });
 
     map.addLayer(primaryCluster);
