@@ -107,3 +107,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Moved the mobile filter toggle to the bottom-right and fully hide the panel when collapsed.
 - Moved the mobile filter toggle to the bottom-left.
 - Expanded the mobile breakpoint to include coarse-pointer devices so the filter toggle appears on large phones.
+- Adjusted mobile safe-area and dynamic viewport sizing to avoid overlap with bottom browser UI.

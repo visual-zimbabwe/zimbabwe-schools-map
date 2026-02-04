@@ -369,7 +369,7 @@ select {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: env(safe-area-inset-bottom);
     top: auto;
     width: auto;
     margin: 0;
@@ -402,5 +402,16 @@ select {
   }
   #map {
     height: 100vh;
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (max-width: 900px), (hover: none) and (pointer: coarse) {
+    .panel {
+      max-height: 60dvh;
+    }
+    #map {
+      height: 100dvh;
+    }
   }
 }
