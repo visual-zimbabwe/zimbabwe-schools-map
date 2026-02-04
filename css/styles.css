@@ -364,7 +364,7 @@ select {
   font-weight: 600;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
   .panel {
     position: fixed;
     left: 0;

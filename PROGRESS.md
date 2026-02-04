@@ -106,3 +106,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added a mobile-first bottom-sheet filter panel with a toggle button and full-height map view.
 - Moved the mobile filter toggle to the bottom-right and fully hide the panel when collapsed.
 - Moved the mobile filter toggle to the bottom-left.
+- Expanded the mobile breakpoint to include coarse-pointer devices so the filter toggle appears on large phones.

@@ -56,7 +56,9 @@ const toggleSecondary = document.getElementById("toggleSecondary");
 const clearFilters = document.getElementById("clearFilters");
 const schoolNames = document.getElementById("schoolNames");
 const panelToggle = document.getElementById("panelToggle");
-const mediaQuery = window.matchMedia("(max-width: 720px)");
+const mediaQuery = window.matchMedia(
+  "(max-width: 900px), (hover: none) and (pointer: coarse)"
+);
 
 function setPanelCollapsed(collapsed) {
   document.body.classList.toggle("panel-collapsed", collapsed);
