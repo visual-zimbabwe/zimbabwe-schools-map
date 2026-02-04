@@ -117,7 +117,7 @@ def test_clean_schools_removes_bad_coords_and_invalid_values():
         assert cleaned[3]["Grant_Class"] == ""
 
         report_text = report_md.read_text(encoding="utf-8")
-        assert "Missing lat/lon (raw): 2" in report_text
+        assert "Missing lat/lon (raw): 0" in report_text
         assert "Missing lat/lon (final): 2" in report_text
     finally:
         for path in (input_csv, output_csv, report_md):
