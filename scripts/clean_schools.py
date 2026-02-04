@@ -55,17 +55,17 @@ def coords_in_zimbabwe(lat, lon):
 def try_utm_to_latlon(x, y):
     try:
         from pyproj import Transformer
-
-        candidates = []
+    except ImportError:
+        return None
+    try:
         for epsg in ("EPSG:32735", "EPSG:32736"):
             transformer = Transformer.from_crs(epsg, "EPSG:4326", always_xy=True)
             lon, lat = transformer.transform(x, y)
             if coords_in_zimbabwe(lat, lon):
                 return lat, lon
-            candidates.append((lat, lon))
-        return candidates[0] if candidates else None
-    except Exception:
-        return None
+    except (ValueError, RuntimeError) as exc:
+        raise RuntimeError(f"UTM conversion failed: {exc}") from exc
+    return None
 
 
 def clean_row(row):
