@@ -56,9 +56,14 @@ def try_utm_to_latlon(x, y):
     try:
         from pyproj import Transformer
 
-        transformer = Transformer.from_crs("EPSG:32736", "EPSG:4326", always_xy=True)
-        lon, lat = transformer.transform(x, y)
-        return lat, lon
+        candidates = []
+        for epsg in ("EPSG:32735", "EPSG:32736"):
+            transformer = Transformer.from_crs(epsg, "EPSG:4326", always_xy=True)
+            lon, lat = transformer.transform(x, y)
+            if coords_in_zimbabwe(lat, lon):
+                return lat, lon
+            candidates.append((lat, lon))
+        return candidates[0] if candidates else None
     except Exception:
         return None
 

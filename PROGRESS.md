@@ -129,3 +129,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Moved Google Fonts loading from CSS @import to HTML link tags with preconnect.
 - Preserved all-uppercase acronyms in normalize_title to avoid mangling acronyms.
 - Saved latest codebase critique to `CODEBASE_CRITIC.md`.
+- Fixed UTM conversion to try EPSG:32735 and EPSG:32736, selecting in-bounds coordinates to avoid Zimbabwe zone mismatch.
