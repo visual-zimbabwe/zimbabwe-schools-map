@@ -4,9 +4,9 @@ from collections import Counter
 from pathlib import Path
 
 try:
-    from scripts.constants import ZIM_BOUNDS
+    from scripts.geo_utils import coords_in_zimbabwe, open_csv, parse_float
 except ModuleNotFoundError:
-    from constants import ZIM_BOUNDS
+    from geo_utils import coords_in_zimbabwe, open_csv, parse_float
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
@@ -16,16 +16,6 @@ REPORT_PATH = DATA_DIR / "quality_report.md"
 
 ALLOWED_LEVELS = {"Primary", "Secondary"}
 ALLOWED_GRANT_CLASS = {"P1", "P2", "P3", "S1", "S2", "S3"}
-
-def open_csv(path: Path):
-    with path.open("rb") as handle:
-        start = handle.read(4)
-    if start.startswith(b"\xff\xfe") or start.startswith(b"\xfe\xff"):
-        encoding = "utf-16"
-    else:
-        encoding = "utf-8-sig"
-    return path.open(newline="", encoding=encoding)
-
 
 def normalize_spaces(value: str) -> str:
     return " ".join(value.strip().split())
@@ -42,20 +32,6 @@ def normalize_title(value: str) -> str:
         else:
             words.append(word.capitalize())
     return " ".join(words)
-
-
-def parse_float(value):
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def coords_in_zimbabwe(lat, lon):
-    return (
-        ZIM_BOUNDS["lat_min"] <= lat <= ZIM_BOUNDS["lat_max"]
-        and ZIM_BOUNDS["lon_min"] <= lon <= ZIM_BOUNDS["lon_max"]
-    )
 
 
 def try_utm_to_latlon(x, y):

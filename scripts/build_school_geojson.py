@@ -8,6 +8,11 @@ try:
 except ModuleNotFoundError:
     from constants import ZIM_BOUNDS
 
+try:
+    from scripts.geo_utils import coords_in_zimbabwe, open_csv, parse_float
+except ModuleNotFoundError:
+    from geo_utils import coords_in_zimbabwe, open_csv, parse_float
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 DEFAULT_CSV = ROOT / "location_of_schools.csv"
@@ -22,20 +27,6 @@ LEVELS = {
         "geojson": DATA_DIR / "secondary_schools.geojson",
     },
 }
-
-def parse_float(value):
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def coords_in_zimbabwe(lat, lon):
-    return (
-        ZIM_BOUNDS["lat_min"] <= lat <= ZIM_BOUNDS["lat_max"]
-        and ZIM_BOUNDS["lon_min"] <= lon <= ZIM_BOUNDS["lon_max"]
-    )
-
 
 def row_to_feature(row):
     lat = parse_float(row.get("latitude"))
@@ -59,16 +50,6 @@ def row_to_feature(row):
         "geometry": {"type": "Point", "coordinates": [lon, lat]},
         "properties": props,
     }
-
-
-def open_csv(path: Path):
-    with path.open("rb") as handle:
-        start = handle.read(4)
-    if start.startswith(b"\xff\xfe") or start.startswith(b"\xfe\xff"):
-        encoding = "utf-16"
-    else:
-        encoding = "utf-8-sig"
-    return path.open(newline="", encoding=encoding)
 
 
 def build_geojson(level, source_path: Path):
