@@ -137,7 +137,7 @@ def main():
                 y = parse_float(cleaned.get("Y"))
 
                 if lat is None or lon is None:
-                    stats["missing_latlon"] += 1
+                    stats["missing_latlon_raw"] += 1
                     if lat is None and lon is None and x is not None and y is not None:
                         converted = try_utm_to_latlon(x, y)
                         if converted:
@@ -155,11 +155,19 @@ def main():
                         cleaned["latitude"] = ""
                         cleaned["longitude"] = ""
 
+                final_lat = parse_float(cleaned.get("latitude"))
+                final_lon = parse_float(cleaned.get("longitude"))
+                if final_lat is None or final_lon is None:
+                    stats["missing_latlon_final"] += 1
+
                 writer.writerow(cleaned)
 
     if stats["rows"]:
-        stats["missing_latlon_pct"] = round(
-            stats["missing_latlon"] / stats["rows"] * 100, 2
+        stats["missing_latlon_raw_pct"] = round(
+            stats["missing_latlon_raw"] / stats["rows"] * 100, 2
+        )
+        stats["missing_latlon_final_pct"] = round(
+            stats["missing_latlon_final"] / stats["rows"] * 100, 2
         )
 
     lines = [
@@ -170,7 +178,8 @@ def main():
         "",
         "## Summary",
         f"- Rows: {stats['rows']}",
-        f"- Missing lat/lon: {stats['missing_latlon']} ({stats.get('missing_latlon_pct', 0)}%)",
+        f"- Missing lat/lon (raw): {stats['missing_latlon_raw']} ({stats.get('missing_latlon_raw_pct', 0)}%)",
+        f"- Missing lat/lon (final): {stats['missing_latlon_final']} ({stats.get('missing_latlon_final_pct', 0)}%)",
         f"- Filled from X/Y: {stats['filled_from_xy']}",
         f"- Zero coords removed: {stats['zero_coords']}",
         f"- Out-of-bounds coords removed: {stats['out_of_bounds']}",
