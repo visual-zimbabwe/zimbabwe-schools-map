@@ -1,9 +1,9 @@
 ﻿import csv
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
-
-import pytest
 
 
 def write_csv(path: Path, rows, fieldnames):
@@ -14,7 +14,14 @@ def write_csv(path: Path, rows, fieldnames):
         writer.writerows(rows)
 
 
-def test_clean_schools_removes_bad_coords(tmp_path):
+def _make_temp_dir():
+    base_dir = Path(__file__).resolve().parent / "tmp"
+    base_dir.mkdir(parents=True, exist_ok=True)
+    return Path(tempfile.mkdtemp(prefix="case-", dir=base_dir))
+
+
+def test_clean_schools_removes_bad_coords():
+    tmp_path = _make_temp_dir()
     input_csv = tmp_path / "input.csv"
     output_csv = tmp_path / "clean.csv"
     report_md = tmp_path / "report.md"
@@ -60,43 +67,47 @@ def test_clean_schools_removes_bad_coords(tmp_path):
     fieldnames = list(rows[0].keys())
     write_csv(input_csv, rows, fieldnames)
 
-    result = subprocess.run(
-        [
-            sys.executable,
-            "scripts/clean_schools.py",
-            "--input",
-            str(input_csv),
-            "--output",
-            str(output_csv),
-            "--report",
-            str(report_md),
-        ],
-        cwd=Path(__file__).resolve().parents[1],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "scripts/clean_schools.py",
+                "--input",
+                str(input_csv),
+                "--output",
+                str(output_csv),
+                "--report",
+                str(report_md),
+            ],
+            cwd=Path(__file__).resolve().parents[1],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
-    assert result.returncode == 0
-    assert output_csv.exists()
-    assert report_md.exists()
+        assert result.returncode == 0
+        assert output_csv.exists()
+        assert report_md.exists()
 
-    with output_csv.open(newline="", encoding="utf-8") as handle:
-        reader = csv.DictReader(handle)
-        cleaned = list(reader)
+        with output_csv.open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            cleaned = list(reader)
 
-    assert len(cleaned) == 3
-    assert cleaned[0]["latitude"] == "-17.8292"
-    assert cleaned[0]["longitude"] == "31.0522"
-    assert cleaned[1]["latitude"] == ""
-    assert cleaned[1]["longitude"] == ""
-    assert cleaned[2]["latitude"] == ""
-    assert cleaned[2]["longitude"] == ""
+        assert len(cleaned) == 3
+        assert cleaned[0]["latitude"] == "-17.8292"
+        assert cleaned[0]["longitude"] == "31.0522"
+        assert cleaned[1]["latitude"] == ""
+        assert cleaned[1]["longitude"] == ""
+        assert cleaned[2]["latitude"] == ""
+        assert cleaned[2]["longitude"] == ""
+    finally:
+        shutil.rmtree(tmp_path, ignore_errors=True)
 
 
-def test_build_geojson_filters_by_level(tmp_path):
+def test_build_geojson_filters_by_level():
     from scripts import build_school_geojson as geo
 
+    tmp_path = _make_temp_dir()
     input_csv = tmp_path / "schools.csv"
     rows = [
         {
@@ -133,9 +144,12 @@ def test_build_geojson_filters_by_level(tmp_path):
     fieldnames = list(rows[0].keys())
     write_csv(input_csv, rows, fieldnames)
 
-    geojson = geo.build_geojson("Primary", input_csv)
-    assert geojson["type"] == "FeatureCollection"
-    assert len(geojson["features"]) == 1
-    feature = geojson["features"][0]
-    assert feature["properties"]["Schoolnumber"] == "101"
-    assert feature["geometry"]["coordinates"] == [31.0, -17.8]
+    try:
+        geojson = geo.build_geojson("Primary", input_csv)
+        assert geojson["type"] == "FeatureCollection"
+        assert len(geojson["features"]) == 1
+        feature = geojson["features"][0]
+        assert feature["properties"]["Schoolnumber"] == "101"
+        assert feature["geometry"]["coordinates"] == [31.0, -17.8]
+    finally:
+        shutil.rmtree(tmp_path, ignore_errors=True)

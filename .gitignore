@@ -24,3 +24,7 @@ Source.md
 
 # Local tooling
 .codex/
+
+# Python caches + test temp
+__pycache__/
+tests/tmp/
