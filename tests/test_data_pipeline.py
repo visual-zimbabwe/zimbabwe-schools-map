@@ -15,7 +15,7 @@ def write_csv(path: Path, rows, fieldnames):
 
 
 def _make_temp_dir():
-    base_dir = Path(__file__).resolve().parent / "tmp"
+    base_dir = Path(tempfile.gettempdir()) / "zimbabwe-tests"
     base_dir.mkdir(parents=True, exist_ok=True)
     return Path(tempfile.mkdtemp(prefix="case-", dir=base_dir))
 
