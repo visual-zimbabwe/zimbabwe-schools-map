@@ -135,3 +135,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Avoided full dataset re-filter on pan/zoom by reusing current filtered results for in-view counts.
 - Replaced marker mutation on GeoJSON features with a Map-backed marker cache.
 - Normalized all-caps titles during cleaning and expanded test coverage.
+- Untracked `.gitignore` and added it to local exclude rules.
