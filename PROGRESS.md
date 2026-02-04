@@ -146,3 +146,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Updated CODEBASE_CRITIC.md with a fresh critique of the current codebase.
 - Updated CODEBASE_CRITIC.md to clarify the fix for unused JS outputs in build_school_geojson.
 - Removed unused JS payload outputs from build_school_geojson to match the app’s GeoJSON-only loading.
+- Updated AGENTS.md to forbid git push when commits include CODEBASE_CRITICS.md or PROGRESS.md.
