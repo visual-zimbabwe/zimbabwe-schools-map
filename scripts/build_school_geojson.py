@@ -17,13 +17,9 @@ BOUNDS_JSON = DATA_DIR / "bounds.json"
 LEVELS = {
     "Primary": {
         "geojson": DATA_DIR / "primary_schools.geojson",
-        "js": DATA_DIR / "primary_schools.js",
-        "window": "PRIMARY_SCHOOLS",
     },
     "Secondary": {
         "geojson": DATA_DIR / "secondary_schools.geojson",
-        "js": DATA_DIR / "secondary_schools.js",
-        "window": "SECONDARY_SCHOOLS",
     },
 }
 
@@ -108,8 +104,6 @@ def write_outputs(level, config, source_path: Path):
     config["geojson"].write_text(
         json.dumps(geojson, ensure_ascii=True), encoding="utf-8"
     )
-    js_payload = f"window.{config['window']} = {json.dumps(geojson, ensure_ascii=True)};\n"
-    config["js"].write_text(js_payload, encoding="utf-8")
 
 
 def write_bounds():
