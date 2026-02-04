@@ -131,3 +131,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Saved latest codebase critique to `CODEBASE_CRITIC.md`.
 - Fixed UTM conversion to try EPSG:32735 and EPSG:32736, selecting in-bounds coordinates to avoid Zimbabwe zone mismatch.
 - Added test ensuring UTM conversion prefers in-bounds EPSG zone without requiring pyproj.
+- Filtered GeoJSON build outputs to drop zero/out-of-bounds coordinates and added regression test.

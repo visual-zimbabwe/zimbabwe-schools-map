@@ -182,6 +182,59 @@ def test_build_geojson_filters_by_level():
             pass
 
 
+def test_build_geojson_drops_invalid_coords():
+    from scripts import build_school_geojson as geo
+
+    base_dir = _base_temp_dir()
+    token = uuid.uuid4().hex
+    input_csv = base_dir / f"schools-invalid-{token}.csv"
+    rows = [
+        {
+            "Schoolnumber": "201",
+            "Name": "Valid",
+            "Province": "Harare",
+            "District": "Harare",
+            "SchoolLevel": "Primary",
+            "Grant_Class": "P1",
+            "latitude": "-17.8",
+            "longitude": "31.0",
+        },
+        {
+            "Schoolnumber": "202",
+            "Name": "Zero",
+            "Province": "Harare",
+            "District": "Harare",
+            "SchoolLevel": "Primary",
+            "Grant_Class": "P2",
+            "latitude": "0",
+            "longitude": "0",
+        },
+        {
+            "Schoolnumber": "203",
+            "Name": "Out of Bounds",
+            "Province": "Harare",
+            "District": "Harare",
+            "SchoolLevel": "Primary",
+            "Grant_Class": "P3",
+            "latitude": "-5.0",
+            "longitude": "40.0",
+        },
+    ]
+    fieldnames = list(rows[0].keys())
+    write_csv(input_csv, rows, fieldnames)
+
+    try:
+        geojson = geo.build_geojson("Primary", input_csv)
+        assert len(geojson["features"]) == 1
+        feature = geojson["features"][0]
+        assert feature["properties"]["Schoolnumber"] == "201"
+    finally:
+        try:
+            input_csv.unlink()
+        except FileNotFoundError:
+            pass
+
+
 def test_try_utm_to_latlon_prefers_in_bounds_zone(monkeypatch):
     from scripts import clean_schools as clean
 

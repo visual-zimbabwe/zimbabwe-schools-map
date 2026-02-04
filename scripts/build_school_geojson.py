@@ -21,6 +21,11 @@ LEVELS = {
     },
 }
 
+ZIM_LAT_MIN = -23.5
+ZIM_LAT_MAX = -15.5
+ZIM_LON_MIN = 25.0
+ZIM_LON_MAX = 34.0
+
 
 def parse_float(value):
     try:
@@ -29,10 +34,18 @@ def parse_float(value):
         return None
 
 
+def coords_in_zimbabwe(lat, lon):
+    return ZIM_LAT_MIN <= lat <= ZIM_LAT_MAX and ZIM_LON_MIN <= lon <= ZIM_LON_MAX
+
+
 def row_to_feature(row):
     lat = parse_float(row.get("latitude"))
     lon = parse_float(row.get("longitude"))
     if lat is None or lon is None:
+        return None
+    if lat == 0.0 or lon == 0.0:
+        return None
+    if not coords_in_zimbabwe(lat, lon):
         return None
     props = {
         "Schoolnumber": (row.get("Schoolnumber") or "").strip(),
