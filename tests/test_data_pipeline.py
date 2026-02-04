@@ -31,8 +31,8 @@ def test_clean_schools_removes_bad_coords_and_invalid_values():
         {
             "Schoolnumber": "001",
             "Name": "Alpha School",
-            "Province": "Harare",
-            "District": "Harare",
+            "Province": "HARARE",
+            "District": "HARARE",
             "SchoolLevel": "Primary",
             "Grant_Class": "P1",
             "latitude": "-17.8292",
@@ -109,6 +109,8 @@ def test_clean_schools_removes_bad_coords_and_invalid_values():
         assert len(cleaned) == 4
         assert cleaned[0]["latitude"] == "-17.8292"
         assert cleaned[0]["longitude"] == "31.0522"
+        assert cleaned[0]["Province"] == "Harare"
+        assert cleaned[0]["District"] == "Harare"
         assert cleaned[1]["latitude"] == ""
         assert cleaned[1]["longitude"] == ""
         assert cleaned[2]["latitude"] == ""

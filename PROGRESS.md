@@ -134,3 +134,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Filtered GeoJSON build outputs to drop zero/out-of-bounds coordinates and added regression test.
 - Avoided full dataset re-filter on pan/zoom by reusing current filtered results for in-view counts.
 - Replaced marker mutation on GeoJSON features with a Map-backed marker cache.
+- Normalized all-caps titles during cleaning and expanded test coverage.

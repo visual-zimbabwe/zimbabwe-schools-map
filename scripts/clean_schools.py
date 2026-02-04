@@ -36,8 +36,6 @@ def normalize_title(value: str) -> str:
     if not value:
         return ""
     value = normalize_spaces(value)
-    if value.isupper():
-        return value
     return value.title()
 
 
