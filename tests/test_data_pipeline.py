@@ -21,7 +21,7 @@ def _base_temp_dir():
     return base_dir
 
 
-def test_clean_schools_removes_bad_coords():
+def test_clean_schools_removes_bad_coords_and_invalid_values():
     base_dir = _base_temp_dir()
     token = uuid.uuid4().hex
     input_csv = base_dir / f"input-{token}.csv"
@@ -65,6 +65,18 @@ def test_clean_schools_removes_bad_coords():
             "X": "",
             "Y": "",
         },
+        {
+            "Schoolnumber": "004",
+            "Name": "Bad Values",
+            "Province": "Harare",
+            "District": "Harare",
+            "SchoolLevel": "Tertiary",
+            "Grant_Class": "Z9",
+            "latitude": "-17.9",
+            "longitude": "31.1",
+            "X": "",
+            "Y": "",
+        },
     ]
     fieldnames = list(rows[0].keys())
     write_csv(input_csv, rows, fieldnames)
@@ -95,13 +107,15 @@ def test_clean_schools_removes_bad_coords():
             reader = csv.DictReader(handle)
             cleaned = list(reader)
 
-        assert len(cleaned) == 3
+        assert len(cleaned) == 4
         assert cleaned[0]["latitude"] == "-17.8292"
         assert cleaned[0]["longitude"] == "31.0522"
         assert cleaned[1]["latitude"] == ""
         assert cleaned[1]["longitude"] == ""
         assert cleaned[2]["latitude"] == ""
         assert cleaned[2]["longitude"] == ""
+        assert cleaned[3]["SchoolLevel"] == ""
+        assert cleaned[3]["Grant_Class"] == ""
     finally:
         for path in (input_csv, output_csv, report_md):
             try:
