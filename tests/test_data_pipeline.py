@@ -259,3 +259,80 @@ def test_try_utm_to_latlon_prefers_in_bounds_zone(monkeypatch):
 
     lat, lon = clean.try_utm_to_latlon(1, 1)
     assert (lat, lon) == (-20.0, 28.0)
+
+
+def test_clean_schools_requires_schema():
+    base_dir = _base_temp_dir()
+    token = uuid.uuid4().hex
+    input_csv = base_dir / f"bad-schema-{token}.csv"
+    output_csv = base_dir / f"clean-{token}.csv"
+    report_md = base_dir / f"report-{token}.md"
+
+    rows = [
+        {
+            "Schoolnumber": "001",
+            "Name": "Alpha",
+            "Province": "Harare",
+            "District": "Harare",
+            "SchoolLevel": "Primary",
+        }
+    ]
+    fieldnames = list(rows[0].keys())
+    write_csv(input_csv, rows, fieldnames)
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/clean_schools.py",
+            "--input",
+            str(input_csv),
+            "--output",
+            str(output_csv),
+            "--report",
+            str(report_md),
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        capture_output=True,
+        text=True,
+    )
+
+    try:
+        assert result.returncode != 0
+        assert "CSV missing required fields" in result.stderr + result.stdout
+    finally:
+        for path in (input_csv, output_csv, report_md):
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
+
+
+def test_build_geojson_requires_schema():
+    from scripts import build_school_geojson as geo
+
+    base_dir = _base_temp_dir()
+    token = uuid.uuid4().hex
+    input_csv = base_dir / f"bad-geojson-schema-{token}.csv"
+    rows = [
+        {
+            "Schoolnumber": "101",
+            "Name": "Alpha",
+            "Province": "Harare",
+            "District": "Harare",
+            "SchoolLevel": "Primary",
+        }
+    ]
+    fieldnames = list(rows[0].keys())
+    write_csv(input_csv, rows, fieldnames)
+
+    try:
+        try:
+            geo.build_geojson("Primary", input_csv)
+            assert False, "Expected SystemExit for missing fields"
+        except SystemExit as exc:
+            assert "CSV missing required fields" in str(exc)
+    finally:
+        try:
+            input_csv.unlink()
+        except FileNotFoundError:
+            pass

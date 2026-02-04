@@ -107,6 +107,21 @@ def main():
     with open_csv(args.input) as handle:
         reader = csv.DictReader(handle)
         fieldnames = list(reader.fieldnames or [])
+        required_fields = {
+            "Schoolnumber",
+            "Name",
+            "Province",
+            "District",
+            "SchoolLevel",
+            "Grant_Class",
+            "latitude",
+            "longitude",
+        }
+        missing_fields_required = required_fields - set(fieldnames)
+        if missing_fields_required:
+            raise SystemExit(
+                f"CSV missing required fields: {sorted(missing_fields_required)}"
+            )
         if "Name_Normalized" not in fieldnames:
             fieldnames.append("Name_Normalized")
 

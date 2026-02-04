@@ -76,6 +76,21 @@ def build_geojson(level, source_path: Path):
     features = []
     with open_csv(source_path) as handle:
         reader = csv.DictReader(handle)
+        required_fields = {
+            "Schoolnumber",
+            "Name",
+            "Province",
+            "District",
+            "SchoolLevel",
+            "Grant_Class",
+            "latitude",
+            "longitude",
+        }
+        missing_fields = required_fields - set(reader.fieldnames or [])
+        if missing_fields:
+            raise SystemExit(
+                f"CSV missing required fields: {sorted(missing_fields)}"
+            )
         for row in reader:
             if (row.get("SchoolLevel") or "").strip() != level:
                 continue
