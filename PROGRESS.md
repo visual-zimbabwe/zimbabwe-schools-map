@@ -165,3 +165,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Added a Google Earth KML export script and generated `data/google_earth_schools.kml`.
 - Switched Google Earth KML export styling to color by level instead of province.
 - Included district (and related attributes) as ExtendedData in KML placemarks.
+- Reorganized KML folders into Level → Province → District hierarchy.

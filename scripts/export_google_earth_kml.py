@@ -68,6 +68,7 @@ def iter_placemarks(features, level_label: str):
             continue
         props = feat.get("properties") or {}
         province = str(props.get("Province") or "Unknown").strip() or "Unknown"
+        district = str(props.get("District") or "Unknown").strip() or "Unknown"
         yield {
             "name": str(props.get("Name") or "Unnamed").strip() or "Unnamed",
             "province": province,
@@ -75,7 +76,7 @@ def iter_placemarks(features, level_label: str):
             "lat": lat,
             "description": build_description(props, level_label),
             "level": level_label,
-            "district": str(props.get("District") or "").strip(),
+            "district": district,
             "grant_class": str(props.get("Grant_Class") or "").strip(),
             "school_number": str(props.get("Schoolnumber") or "").strip(),
         }
@@ -126,12 +127,22 @@ def build_styles():
 def build_folder(name: str, placemarks, level: str):
     lines = [f'  <Folder><name>{escape(name)}</name>']
     current_province = None
-    for item in sorted(placemarks, key=lambda p: (p["province"], p["name"])):
+    current_district = None
+    for item in sorted(placemarks, key=lambda p: (p["province"], p["district"], p["name"])):
         if item["province"] != current_province:
+            if current_district is not None:
+                lines.append("      </Folder>")
+                current_district = None
             if current_province is not None:
                 lines.append("    </Folder>")
             lines.append(f'    <Folder><name>{escape(item["province"])}</name>')
             current_province = item["province"]
+        if item["district"] != current_district:
+            if current_district is not None:
+                lines.append("      </Folder>")
+            lines.append(f'      <Folder><name>{escape(item["district"])}</name>')
+            current_district = item["district"]
+
         style_url = f"#style-{level}-map"
         district = escape(item["district"])
         province = escape(item["province"])
@@ -140,23 +151,25 @@ def build_folder(name: str, placemarks, level: str):
         school_number = escape(item["school_number"])
         lines.append(
             f"""
-      <Placemark>
-        <name>{escape(item['name'])}</name>
-        <description><![CDATA[{item['description']}]]></description>
-        <styleUrl>{style_url}</styleUrl>
-        <ExtendedData>
-          <Data name="level"><value>{level_label}</value></Data>
-          <Data name="province"><value>{province}</value></Data>
-          <Data name="district"><value>{district}</value></Data>
-          <Data name="grant_class"><value>{grant_class}</value></Data>
-          <Data name="school_number"><value>{school_number}</value></Data>
-        </ExtendedData>
-        <Point>
-          <coordinates>{item['lon']},{item['lat']},0</coordinates>
-        </Point>
-      </Placemark>
+        <Placemark>
+          <name>{escape(item['name'])}</name>
+          <description><![CDATA[{item['description']}]]></description>
+          <styleUrl>{style_url}</styleUrl>
+          <ExtendedData>
+            <Data name="level"><value>{level_label}</value></Data>
+            <Data name="province"><value>{province}</value></Data>
+            <Data name="district"><value>{district}</value></Data>
+            <Data name="grant_class"><value>{grant_class}</value></Data>
+            <Data name="school_number"><value>{school_number}</value></Data>
+          </ExtendedData>
+          <Point>
+            <coordinates>{item['lon']},{item['lat']},0</coordinates>
+          </Point>
+        </Placemark>
 """
         )
+    if current_district is not None:
+        lines.append("      </Folder>")
     if current_province is not None:
         lines.append("    </Folder>")
     lines.append("  </Folder>")
