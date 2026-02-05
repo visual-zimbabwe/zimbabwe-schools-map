@@ -74,6 +74,10 @@ def iter_placemarks(features, level_label: str):
             "lon": lon,
             "lat": lat,
             "description": build_description(props, level_label),
+            "level": level_label,
+            "district": str(props.get("District") or "").strip(),
+            "grant_class": str(props.get("Grant_Class") or "").strip(),
+            "school_number": str(props.get("Schoolnumber") or "").strip(),
         }
 
 
@@ -129,12 +133,24 @@ def build_folder(name: str, placemarks, level: str):
             lines.append(f'    <Folder><name>{escape(item["province"])}</name>')
             current_province = item["province"]
         style_url = f"#style-{level}-map"
+        district = escape(item["district"])
+        province = escape(item["province"])
+        level_label = escape(item["level"])
+        grant_class = escape(item["grant_class"])
+        school_number = escape(item["school_number"])
         lines.append(
             f"""
       <Placemark>
         <name>{escape(item['name'])}</name>
         <description><![CDATA[{item['description']}]]></description>
         <styleUrl>{style_url}</styleUrl>
+        <ExtendedData>
+          <Data name="level"><value>{level_label}</value></Data>
+          <Data name="province"><value>{province}</value></Data>
+          <Data name="district"><value>{district}</value></Data>
+          <Data name="grant_class"><value>{grant_class}</value></Data>
+          <Data name="school_number"><value>{school_number}</value></Data>
+        </ExtendedData>
         <Point>
           <coordinates>{item['lon']},{item['lat']},0</coordinates>
         </Point>
