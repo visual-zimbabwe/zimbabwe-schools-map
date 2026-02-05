@@ -9,18 +9,10 @@ SECONDARY_GEOJSON = DATA_DIR / "secondary_schools.geojson"
 OUTPUT_KML = DATA_DIR / "google_earth_schools.kml"
 
 
-PALETTE = [
-    "#1f77b4",
-    "#ff7f0e",
-    "#2ca02c",
-    "#d62728",
-    "#9467bd",
-    "#8c564b",
-    "#e377c2",
-    "#7f7f7f",
-    "#bcbd22",
-    "#17becf",
-]
+LEVEL_COLORS = {
+    "primary": "#1f77b4",
+    "secondary": "#ff7f0e",
+}
 
 
 def load_geojson(path: Path):
@@ -79,24 +71,21 @@ def iter_placemarks(features, level_label: str):
         yield {
             "name": str(props.get("Name") or "Unnamed").strip() or "Unnamed",
             "province": province,
-            "province_slug": slugify(province),
             "lon": lon,
             "lat": lat,
             "description": build_description(props, level_label),
         }
 
 
-def build_styles(provinces):
+def build_styles():
     styles = []
-    for idx, province in enumerate(sorted(provinces)):
-        color = to_kml_color(PALETTE[idx % len(PALETTE)])
-        slug = slugify(province)
-        for level, scale, hl_scale in [("primary", 0.8, 1.0), ("secondary", 1.0, 1.2)]:
-            style_id = f"style-{level}-{slug}"
-            hl_id = f"{style_id}-hl"
-            map_id = f"{style_id}-map"
-            styles.append(
-                f"""
+    for level, scale, hl_scale in [("primary", 0.8, 1.0), ("secondary", 1.0, 1.2)]:
+        color = to_kml_color(LEVEL_COLORS[level])
+        style_id = f"style-{level}"
+        hl_id = f"{style_id}-hl"
+        map_id = f"{style_id}-map"
+        styles.append(
+            f"""
   <Style id="{style_id}">
     <IconStyle>
       <color>{color}</color>
@@ -126,7 +115,7 @@ def build_styles(provinces):
     </Pair>
   </StyleMap>
 """
-            )
+        )
     return "\n".join(styles)
 
 
@@ -139,7 +128,7 @@ def build_folder(name: str, placemarks, level: str):
                 lines.append("    </Folder>")
             lines.append(f'    <Folder><name>{escape(item["province"])}</name>')
             current_province = item["province"]
-        style_url = f"#style-{level}-{item['province_slug']}-map"
+        style_url = f"#style-{level}-map"
         lines.append(
             f"""
       <Placemark>
@@ -165,9 +154,7 @@ def main():
     primary_marks = list(iter_placemarks(primary_features, "Primary"))
     secondary_marks = list(iter_placemarks(secondary_features, "Secondary"))
 
-    provinces = {m["province"] for m in primary_marks + secondary_marks}
-
-    styles_block = build_styles(provinces)
+    styles_block = build_styles()
     primary_folder = build_folder("Primary Schools", primary_marks, "primary")
     secondary_folder = build_folder("Secondary Schools", secondary_marks, "secondary")
 

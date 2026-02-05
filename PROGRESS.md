@@ -163,3 +163,4 @@ Rule: Update this file whenever changes are made (files, data, plans, or decisio
 - Drafted a plan for using project data in Google Earth.
 - Updated the Google Earth plan to target Google Earth web public sharing with province + level styling using primary/secondary GeoJSON.
 - Added a Google Earth KML export script and generated `data/google_earth_schools.kml`.
+- Switched Google Earth KML export styling to color by level instead of province.
